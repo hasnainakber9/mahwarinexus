@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MahwariNexus | Global Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Nunito+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
+    <!-- Leaflet.js JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+      :root {
+          --color-primary: #1A120B; --color-text: #EAE0D5; --color-accent-gold: #DAA520;
+          --color-accent-teal: #008080; --color-medium: #A8A29A; --color-dark: #0D0907;
+          --color-glass: rgba(234, 224, 213, 0.1); --color-glass-border: rgba(234, 224, 213, 0.2);
+          --font-primary: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          --font-heading: 'Cormorant Garamond', Georgia, serif;
+          --header-height: 72px; --space-md: 1rem; --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
+          --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+          --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          --transition-normal: 0.25s ease-out; --z-background: -1; --z-content: 1; --z-navigation: 100;
+      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body { background-color: var(--color-primary); color: var(--color-text); font-family: var(--font-primary); line-height: 1.6; overflow-x: hidden; position: relative; }
+      body.modal-open { overflow: hidden; }
+      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+      
+      /* --- Main Layout & Background --- */
+      .cosmic-background { position: fixed; inset: 0; z-index: var(--z-background); overflow: hidden; }
+      .cosmic-background canvas { display: block; width: 100%; height: 100%; }
+      .container { width: 100%; max-width: 1400px; margin: auto; padding: 0 var(--space-xl); }
+      .content-section { padding: var(--space-2xl) 0; position: relative; z-index: var(--z-content); }
+      main { padding-top: var(--header-height); }
+      
+      /* --- Header --- */
+      .site-header { position: fixed; top: 0; left: 0; width: 100%; z-index: var(--z-navigation); height: var(--header-height); display: flex; align-items: center; background-color: rgba(26, 18, 11, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--color-glass-border); }
+      .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+      .nav-logo { font-family: var(--font-heading); font-weight: 700; font-size: 1.75rem; color: var(--color-accent-gold); text-decoration: none; }
+      .main-nav { display: flex; align-items: center; gap: var(--space-lg); }
+      .nav-link { font-family: var(--font-heading); font-weight: 700; font-size: 1rem; color: var(--color-text); text-decoration: none; padding: 0.25rem; transition: color var(--transition-normal); position: relative; }
+      .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px; background: var(--color-accent-gold); transform: scaleX(0); transform-origin: center; transition: transform 0.3s ease; }
+      .nav-link:hover, .nav-link.active { color: var(--color-accent-gold); }
+      .nav-link.active::after { transform: scaleX(1); }
+      .user-profile { font-family: var(--font-primary); font-size: 0.9rem; font-weight: 700; color: var(--color-medium); }
+      
+      /* --- Dashboard Specific Typography --- */
+      h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; color: var(--color-text); line-height: 1.2; }
+      h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: var(--space-md); }
+      h2 { font-size: clamp(2rem, 4vw, 2.75rem); margin-bottom: var(--space-lg); color: var(--color-accent-gold); }
+      h3 { font-size: 1.5rem; margin-bottom: var(--space-md); color: var(--color-accent-teal); }
+      p { color: var(--color-medium); max-width: 65ch; }
+
+      /* --- Search Bar --- */
+      .search-bar { display: flex; max-width: 700px; margin: var(--space-xl) 0; }
+      .search-input { flex-grow: 1; padding: 0.875rem 1.25rem; background-color: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-md) 0 0 var(--radius-md); color: var(--color-text); font-family: var(--font-primary); font-size: 1rem; }
+      .search-input:focus { outline: none; border-color: var(--color-accent-gold); }
+      .search-btn { padding: 0.875rem 1.5rem; background-color: var(--color-accent-teal); border: none; border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--color-primary); font-weight: 700; cursor: pointer; }
+
+      /* --- Stat Cards --- */
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg); }
+      .stat-card { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); padding: var(--space-lg); transition: all var(--transition-normal); }
+      .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--color-accent-teal); }
+      .stat-title { font-size: 0.9rem; font-weight: 700; color: var(--color-medium); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;}
+      .stat-value { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700; color: var(--color-text); }
+      .stat-change { font-size: 0.9rem; font-weight: 700; }
+      .stat-change.positive { color: #4ade80; }
+      .stat-change.negative { color: #f87171; }
+      .stat-source { font-size: 0.75rem; color: var(--color-medium); margin-top: 0.5rem; font-style: italic; }
+
+      /* --- Chart & Map Containers --- */
+      .dashboard-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: var(--space-xl); margin-top: var(--space-2xl); }
+      @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(3, 1fr); } }
+      .chart-container, .map-container { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-xl); padding: var(--space-lg); min-height: 400px; display: flex; flex-direction: column; }
+      .map-container { grid-column: 1 / -1; }
+      @media (min-width: 1024px) { .map-container { grid-column: span 2 / span 2; } }
+      .visualization-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 450px; }
+
+      /* --- World Map & Tooltip --- */
+      #world-map { width: 100%; height: 100%; background-color: transparent; border-radius: var(--radius-lg); }
+      .leaflet-container { background: transparent; }
+      .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9); }
+      .leaflet-popup-content-wrapper, .leaflet-popup-tip { background-color: var(--color-dark); color: var(--color-text); box-shadow: none; border: 1px solid var(--color-glass-border); }
+
+      #map-tooltip { position: fixed; background: var(--color-dark); color: var(--color-text); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; pointer-events: none; opacity: 0; transition: opacity 0.2s; border: 1px solid var(--color-accent-gold); z-index: 10001; max-width: 250px; }
+      #map-tooltip h4 { color: var(--color-accent-gold); margin-bottom: 0.5rem; font-family: var(--font-heading); }
+      #map-tooltip p { font-size: 0.85rem; margin: 0; line-height: 1.5; }
+      #map-tooltip strong { color: var(--color-accent-teal); }
+      
+      .map-legend { position: absolute; bottom: 10px; left: 10px; background-color: rgba(13, 9, 7, 0.7); padding: 0.5rem 1rem; border-radius: var(--radius-md); font-size: 0.8rem; z-index: 1000;}
+      .legend-item { display: flex; align-items: center; margin-bottom: 0.25rem; }
+      .legend-color { width: 12px; height: 12px; margin-right: 0.5rem; border-radius: 2px; }
+
+      /* --- Trend Chart & Tooltip --- */
+      .trend-chart-svg { width: 100%; height: 100%; overflow: visible; }
+      .trend-chart-svg .grid-line { stroke: var(--color-glass-border); stroke-width: 0.5; }
+      .trend-chart-svg .axis-label { fill: var(--color-medium); font-size: 10px; font-family: var(--font-primary); }
+      .trend-chart-svg .trend-line { stroke: var(--color-accent-teal); stroke-width: 2.5; fill: none; }
+      .trend-chart-svg .trend-point { fill: var(--color-accent-gold); r: 3; transition: r 0.2s ease; cursor: pointer; }
+      .trend-chart-svg .trend-point:hover { r: 5; }
+      .chart-tooltip-text { fill: var(--color-text); font-size: 12px; text-anchor: middle; font-weight: bold; pointer-events: none; opacity: 0; transition: opacity 0.2s ease; }
+
+      /* --- CSE Curricula Section --- */
+      .cse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-lg); }
+      .cse-card { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); padding: var(--space-lg); display: flex; flex-direction: column; transition: all var(--transition-normal); }
+      .cse-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--color-accent-gold); }
+      .cse-card p { font-size: 0.95rem; flex-grow: 1; }
+      .cse-explore-btn { display: inline-block; margin-top: var(--space-md); font-weight: 700; color: var(--color-accent-gold); text-decoration: none; background: none; border: none; font-family: inherit; font-size: inherit; cursor: pointer; padding: 0; text-align: left;}
+      .cse-explore-btn:hover { text-decoration: underline; }
+
+      /* --- Reports & Data Explorer Tables --- */
+      .table-wrapper { overflow-x: auto; background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); }
+      .data-table { width: 100%; border-collapse: collapse; }
+      .data-table th, .data-table td { padding: var(--space-md) var(--space-lg); text-align: left; border-bottom: 1px solid var(--color-glass-border); white-space: nowrap; }
+      .data-table th { font-family: var(--font-heading); font-weight: 700; color: var(--color-text); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table td .btn { display: inline-block; padding: 0.4rem 0.8rem; font-size: 0.8rem; background-color: var(--color-accent-teal); color: var(--color-primary); text-decoration: none; border-radius: var(--radius-md); transition: background-color 0.2s; }
+      .data-table td .btn:hover { background-color: var(--color-accent-gold); }
+      .data-table td:not(:first-child) { text-align: center; }
+      .data-table th:not(:first-child) { text-align: center; }
+
+      /* --- Modal (Generic) --- */
+      .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 200; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+      .modal-overlay.is-visible { opacity: 1; visibility: visible; }
+      .modal-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); background-color: var(--color-dark); border: 1px solid var(--color-glass-border); border-radius: var(--radius-xl); max-width: 900px; width: calc(100% - 2rem); max-height: 90vh; overflow-y: auto; z-index: 201; box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease; }
+      .modal-overlay.is-visible .modal-container { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+      .modal-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); border-bottom: 1px solid var(--color-glass-border); }
+      .modal-title { font-size: 1.75rem; color: var(--color-accent-gold); margin-bottom: 0; }
+      .modal-close-btn { background: none; border: none; font-size: 2rem; color: var(--color-medium); cursor: pointer; line-height: 1; }
+      .modal-content { padding: var(--space-xl); }
+      .modal-content h4 { color: var(--color-accent-teal); font-size: 1.25rem; margin-top: var(--space-lg); margin-bottom: var(--space-md); }
+      .modal-content p { margin-bottom: var(--space-md); }
+      .modal-content ul { list-style-position: inside; padding-left: 0.5rem; color: var(--color-medium);}
+      .modal-content li { margin-bottom: 0.5rem; }
+
+      /* --- Search Results Modal --- */
+      #search-results-content { max-height: 70vh; }
+      .search-result-item { margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--color-glass-border); }
+      .search-result-item:last-child { border-bottom: none; }
+      .search-result-title { font-family: var(--font-heading); font-size: 1.25rem; color: var(--color-accent-teal); }
+      .search-result-type { font-size: 0.8rem; font-weight: bold; color: var(--color-medium); text-transform: uppercase; margin-bottom: 0.5rem; }
+      .search-result-snippet { font-size: 1rem; color: var(--color-text); }
+      .no-results-message { color: var(--color-medium); text-align: center; padding: var(--space-xl) 0; }
+      .result-link { color: var(--color-accent-gold); text-decoration: none; font-weight: bold; }
+
+      /* --- GSAP Reveal Animation --- */
+      .reveal-up { opacity: 0; transform: translateY(40px); }
+    </style>
+</head>
+<body>
+    <div id="map-tooltip"></div>
+
+    <div class="modal-overlay" id="module-modal-overlay">
+        <div class="modal-container" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">Module Title</h2>
+                <button id="modal-close-btn" class="modal-close-btn" aria-label="Close module">&times;</button>
+            </div>
+            <div class="modal-content" id="modal-content">
+                <!-- Module content will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="search-results-overlay">
+        <div class="modal-container" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h2 class="modal-title">Search Results</h2>
+                <button id="search-results-close-btn" class="modal-close-btn" aria-label="Close search results">&times;</button>
+            </div>
+            <div class="modal-content" id="search-results-content">
+                <!-- Search results will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="cosmic-background" id="cosmicBackground"></div>
+    <div id="site-wrapper">
+        <header id="site-header" class="site-header">
+            <div class="container">
+                <a href="#dashboard" class="nav-logo">MahwariNexus</a>
+                <nav class="main-nav">
+                    <a href="#dashboard" class="nav-link">Dashboard</a>
+                    <a href="#cse" class="nav-link">CSE Curricula</a>
+                    <a href="#reports" class="nav-link">Reports</a>
+                    <a href="#explorer" class="nav-link">Data Explorer</a>
+                </nav>
+                <div class="user-profile">
+                    Researcher | UNFPA
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <section id="dashboard" class="content-section">
+                <div class="container">
+                    <div class="reveal-up">
+                        <h1>Global SRHR Dashboard</h1>
+                        <p>The definitive intelligence engine for Sexual and Reproductive Health and Rights.</p>
+                        <form class="search-bar" id="search-form">
+                            <input type="search" id="search-input" class="search-input" placeholder="Ask a question or search for data (e.g., 'What is CPR?' or 'Pakistan MMR')...">
+                            <button type="submit" class="search-btn">Search</button>
+                        </form>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card reveal-up">
+                            <h4 class="stat-title">Contraceptive Prevalence</h4>
+                            <p class="stat-value">57.4%</p>
+                            <p class="stat-change positive">+0.2% vs last year</p>
+                            <p class="stat-source">Source: World Bank, 2023</p>
+                        </div>
+                        <div class="stat-card reveal-up">
+                            <h4 class="stat-title">Maternal Mortality Ratio</h4>
+                            <p class="stat-value">223</p>
+                            <p class="stat-change negative">-0.9% vs last year</p>
+                             <p class="stat-source">Source: WHO, 2020 data</p>
+                        </div>
+                        <div class="stat-card reveal-up">
+                            <h4 class="stat-title">Adolescent Birth Rate</h4>
+                            <p class="stat-value">41.2</p>
+                            <p class="stat-change positive">-0.4% vs last year</p>
+                             <p class="stat-source">Source: UNFPA, 2023</p>
+                        </div>
+                        <div class="stat-card reveal-up">
+                            <h4 class="stat-title">Policies Indexed</h4>
+                            <p class="stat-value">1,492</p>
+                            <p class="stat-change positive">+58 new this month</p>
+                             <p class="stat-source">Source: MahwariNexus DB</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="map-container reveal-up">
+                           <h3>Global Map: Unmet Need for Family Planning (% of women 15-49)</h3>
+                            <div class="visualization-wrapper">
+                                <div id="world-map"></div>
+                                <div class="map-legend">
+                                    <div class="legend-item"><div class="legend-color" style="background-color: #004d4d;"></div> &gt; 20% Unmet Need</div>
+                                    <div class="legend-item"><div class="legend-color" style="background-color: #008080;"></div> 10-20% Unmet Need</div>
+                                    <div class="legend-item"><div class="legend-color" style="background-color: #4db6ac;"></div> &lt; 10% Unmet Need</div>
+                                    <div class="legend-item"><div class="legend-color" style="background-color: #333;"></div> No Data</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container reveal-up">
+                            <h3>Trends: Contraceptive Prevalence (Modern Methods)</h3>
+                            <div class="visualization-wrapper">
+                                <svg class="trend-chart-svg" id="trend-chart" viewBox="0 0 200 110">
+                                    <!-- Grid lines -->
+                                    <line class="grid-line" x1="15" y1="10" x2="190" y2="10"></line>
+                                    <line class="grid-line" x1="15" y1="50" x2="190" y2="50"></line>
+                                    <line class="grid-line" x1="15" y1="90" x2="190" y2="90"></line>
+                                    <!-- Axis Labels -->
+                                    <text class="axis-label" x="0" y="12">75%</text>
+                                    <text class="axis-label" x="0" y="52">50%</text>
+                                    <text class="axis-label" x="0" y="92">25%</text>
+                                    <text class="axis-label" x="20" y="105">2000</text>
+                                    <text class="axis-label" x="90" y="105">2012</text>
+                                    <text class="axis-label" x="170" y="105">2024</text>
+                                    <!-- Trend Line will be populated by JS -->
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cse" class="content-section">
+                <div class="container">
+                    <div class="reveal-up">
+                        <h2>Comprehensive Sexuality Education</h2>
+                        <p>Access curated, age-appropriate, and culturally-aware CSE curricula based on the UN's International Technical Guidance.</p>
+                    </div>
+                    <div class="cse-grid" style="margin-top: var(--space-xl);">
+                        <div class="cse-card reveal-up">
+                            <h3>Relationships</h3>
+                            <p>Modules on families, friendships, romantic and intimate relationships, and consent.</p>
+                            <button class="cse-explore-btn" data-module="relationships">Explore Modules &rarr;</button>
+                        </div>
+                        <div class="cse-card reveal-up">
+                            <h3>Understanding Gender</h3>
+                            <p>Exploring gender identity, gender expression, stereotypes, and gender equality.</p>
+                            <button class="cse-explore-btn" data-module="gender">Explore Modules &rarr;</button>
+                        </div>
+                        <div class="cse-card reveal-up">
+                            <h3>Violence and Staying Safe</h3>
+                            <p>Information on gender-based violence, building safe environments, and seeking help.</p>
+                            <button class="cse-explore-btn" data-module="safety">Explore Modules &rarr;</button>
+                        </div>
+                         <div class="cse-card reveal-up">
+                            <h3>Health & Well-being</h3>
+                            <p>Covering human body and development, puberty, and sexual and reproductive health.</p>
+                            <button class="cse-explore-btn" data-module="health">Explore Modules &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="reports" class="content-section">
+                <div class="container">
+                    <div class="reveal-up">
+                        <h2>Generated Reports & Documents</h2>
+                        <p>Access and download pre-computed national profiles, thematic reports, and raw data exports.</p>
+                    </div>
+                    <div class="table-wrapper reveal-up" style="margin-top: var(--space-xl);">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Date Generated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>UNFPA State of World Population 2024</td>
+                                    <td>Thematic Report</td>
+                                    <td>2025-09-30</td>
+                                    <td><a href="data:text/plain;charset=utf-8,UNFPA%20State%20of%20World%20Population%202024%0A%0AThis%20is%20a%20placeholder%20for%20the%20full%20report%20document." download="UNFPA_SoWP_2024_Summary.pdf" class="btn">Download PDF</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Nigeria - National SRHR Profile</td>
+                                    <td>Country Profile</td>
+                                    <td>2025-09-28</td>
+                                    <td><a href="data:text/plain;charset=utf-8,Nigeria%20-%20National%20SRHR%20Profile%0A%0AThis%20is%20a%20placeholder%20for%20the%20full%20report%20document." download="Nigeria_SRHR_Profile_2025.pdf" class="btn">Download PDF</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Global Adolescent Fertility (2015-2024)</td>
+                                    <td>Data Export</td>
+                                    <td>2025-09-25</td>
+                                    <td><a href="data:text/csv;charset=utf-8,Year,Region,Adolescent_Fertility_Rate%0A2015,Global,44.1%0A2016,Global,43.8%0A2017,Global,43.5%0A2018,Global,43.1%0A2019,Global,42.7%0A2020,Global,42.5%0A2021,Global,42.1%0A2022,Global,41.7%0A2023,Global,41.5%0A2024,Global,41.2" download="Global_Adolescent_Fertility_2015-2024.csv" class="btn">Download CSV</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Trends in Maternal Mortality 2000-2020 (WHO)</td>
+                                    <td>Thematic Report</td>
+                                    <td>2025-09-15</td>
+                                    <td><a href="data:text/plain;charset=utf-8,Trends%20in%20Maternal%20Mortality%202000-2020%20(WHO)%0A%0AThis%20is%20a%20placeholder%20for%20the%20full%20report%20document." download="WHO_Maternal_Mortality_Trends_2000-2020.pdf" class="btn">Download PDF</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="explorer" class="content-section">
+                <div class="container">
+                    <div class="reveal-up">
+                        <h2>Data Explorer</h2>
+                        <p>Compare key SRHR indicators across countries and regions. All data is from latest available WHO, UNFPA, and World Bank reports.</p>
+                    </div>
+                    <div class="table-wrapper reveal-up" style="margin-top: var(--space-xl);">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Country</th>
+                                    <th>Unmet Need FP (%)</th>
+                                    <th>CPR, Modern (%)</th>
+                                    <th>MMR (per 100k)</th>
+                                    <th>Adolescent Birth Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Pakistan</td>
+                                    <td>17.3</td>
+                                    <td>34.2</td>
+                                    <td>186</td>
+                                    <td>38</td>
+                                </tr>
+                                 <tr>
+                                    <td>Nigeria</td>
+                                    <td>19.0</td>
+                                    <td>12.0</td>
+                                    <td>917</td>
+                                    <td>101</td>
+                                </tr>
+                                <tr>
+                                    <td>Ethiopia</td>
+                                    <td>21.5</td>
+                                    <td>37.9</td>
+                                    <td>401</td>
+                                    <td>70</td>
+                                </tr>
+                                <tr>
+                                    <td>India</td>
+                                    <td>9.4</td>
+                                    <td>56.5</td>
+                                    <td>145</td>
+                                    <td>17</td>
+                                </tr>
+                                 <tr>
+                                    <td>Brazil</td>
+                                    <td>5.5</td>
+                                    <td>79.4</td>
+                                    <td>60</td>
+                                    <td>53</td>
+                                </tr>
+                                <tr>
+                                    <td>United States</td>
+                                    <td>9.9</td>
+                                    <td>73.8</td>
+                                    <td>19</td>
+                                    <td>15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        'use strict';
+        
+        const els = {
+            cosmicBackground: document.querySelector('#cosmicBackground'),
+            siteHeader: document.querySelector('#site-header'),
+            mapTooltip: document.querySelector('#map-tooltip'),
+            worldMap: document.querySelector('#world-map'),
+            trendChart: document.querySelector('#trend-chart'),
+            moduleModalOverlay: document.querySelector('#module-modal-overlay'),
+            modalTitle: document.querySelector('#modal-title'),
+            modalContent: document.querySelector('#modal-content'),
+            modalCloseBtn: document.querySelector('#modal-close-btn'),
+            searchForm: document.querySelector('#search-form'),
+            searchInput: document.querySelector('#search-input'),
+            searchResultsOverlay: document.querySelector('#search-results-overlay'),
+            searchResultsContent: document.querySelector('#search-results-content'),
+            searchResultsCloseBtn: document.querySelector('#search-results-close-btn'),
+        };
+
+        let cosmicBgAnimator = null;
+        let map; // Leaflet map instance
+
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+        initNavigation();
+        initMotionAndBackground();
+        initSiteAnimations();
+        initInteractiveMap();
+        initInteractiveChart();
+        initModuleModal();
+        initSearch();
+
+        function initNavigation() {
+            document.querySelectorAll('.main-nav a[href^="#"], .nav-logo[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        let target = document.querySelector(href);
+                        if (target) {
+                            gsap.to(window, {
+                                duration: 1,
+                                scrollTo: { y: target, offsetY: els.siteHeader?.offsetHeight || 72 },
+                                ease: "power2.inOut"
+                            });
+                        }
+                    }
+                });
+            });
+
+            gsap.utils.toArray('main .content-section[id]').forEach(section => {
+                ScrollTrigger.create({
+                    trigger: section,
+                    start: "top center",
+                    end: "bottom center",
+                    onToggle: self => {
+                        document.querySelectorAll('.nav-link.active').forEach(l => l.classList.remove('active'));
+                        const navLink = document.querySelector(`.nav-link[href="#${section.id}"]`);
+                        if (navLink && self.isActive) {
+                           navLink.classList.add('active');
+                        }
+                    }
+                });
+            });
+             // Set initial active link
+            if (!document.querySelector('.nav-link.active')) {
+                document.querySelector('.nav-link[href="#dashboard"]')?.classList.add('active');
+            }
+        }
+        
+        async function initInteractiveMap() {
+            if (!els.worldMap || !els.mapTooltip) return;
+
+            // Data from World Bank, UNFPA, WHO (latest available, simplified for demo)
+            const countryData = {
+                AFG: { name: 'Afghanistan', unmetNeed: 29.5 }, BGD: { name: 'Bangladesh', unmetNeed: 11.9 }, BTN: { name: 'Bhutan', unmetNeed: 14.2 }, IND: { name: 'India', unmetNeed: 9.4 }, NPL: { name: 'Nepal', unmetNeed: 12.7 }, PAK: { name: 'Pakistan', unmetNeed: 17.3, cpr: '34.2%', mmr: '186' }, LKA: { name: 'Sri Lanka', unmetNeed: 7.4 }, 
+                CHN: { name: 'China', unmetNeed: 2.1 }, JPN: { name: 'Japan', unmetNeed: 4.8 }, MNG: { name: 'Mongolia', unmetNeed: 13.1 }, PRK: { name: 'North Korea', unmetNeed: 8.1 }, KOR: { name: 'South Korea', unmetNeed: 2.8 },
+                KAZ: { name: 'Kazakhstan', unmetNeed: 10.9 }, KGZ: { name: 'Kyrgyzstan', unmetNeed: 11.5 }, TJK: { name: 'Tajikistan', unmetNeed: 19.1 }, TKM: { name: 'Turkmenistan', unmetNeed: 1.5 }, UZB: { name: 'Uzbekistan', unmetNeed: 7.2 },
+                KHM: { name: 'Cambodia', unmetNeed: 12.7 }, IDN: { name: 'Indonesia', unmetNeed: 9.9 }, LAO: { name: 'Laos', unmetNeed: 13.9 }, MYS: { name: 'Malaysia', unmetNeed: 10.1 }, MMR: { name: 'Myanmar', unmetNeed: 16.1 }, PHL: { name: 'Philippines', unmetNeed: 16.7 }, THA: { name: 'Thailand', unmetNeed: 3.4 }, TLS: { name: 'Timor-Leste', unmetNeed: 21.6 }, VNM: { name: 'Vietnam', unmetNeed: 5.8 },
+                ARM: { name: 'Armenia', unmetNeed: 13.7 }, AZE: { name: 'Azerbaijan', unmetNeed: 10.3 }, BHR: { name: 'Bahrain', unmetNeed: 9.1 }, CYP: { name: 'Cyprus', unmetNeed: 6.2 }, GEO: { name: 'Georgia', unmetNeed: 13.2 }, IRQ: { name: 'Iraq', unmetNeed: 15.7 }, ISR: { name: 'Israel', unmetNeed: 4.1 }, JOR: { name: 'Jordan', unmetNeed: 9.8 }, KWT: { name: 'Kuwait', unmetNeed: 10.5 }, LBN: { name: 'Lebanon', unmetNeed: 14.1 }, OMN: { name: 'Oman', unmetNeed: 11.2 }, PSE: { name: 'Palestine', unmetNeed: 11.8 }, QAT: { name: 'Qatar', unmetNeed: 11.1 }, SAU: { name: 'Saudi Arabia', unmetNeed: 12.3 }, SYR: { name: 'Syria', unmetNeed: 15.6 }, TUR: { name: 'Turkey', unmetNeed: 6.0 }, ARE: { name: 'United Arab Emirates', unmetNeed: 8.9 }, YEM: { name: 'Yemen', unmetNeed: 29.8 }, IRN: { name: 'Iran', unmetNeed: 5.0 },
+                BLR: { name: 'Belarus', unmetNeed: 5.1 }, BGR: { name: 'Bulgaria', unmetNeed: 7.8 }, CZE: { name: 'Czechia', unmetNeed: 4.2 }, HUN: { name: 'Hungary', unmetNeed: 4.5 }, POL: { name: 'Poland', unmetNeed: 5.3 }, MDA: { name: 'Moldova', unmetNeed: 8.9 }, ROU: { name: 'Romania', unmetNeed: 8.2 }, RUS: { name: 'Russia', unmetNeed: 6.8 }, SVK: { name: 'Slovakia', unmetNeed: 5.1 }, UKR: { name: 'Ukraine', unmetNeed: 6.3 },
+                DNK: { name: 'Denmark', unmetNeed: 3.1 }, EST: { name: 'Estonia', unmetNeed: 4.9 }, FIN: { name: 'Finland', unmetNeed: 3.2 }, ISL: { name: 'Iceland', unmetNeed: 2.9 }, IRL: { name: 'Ireland', unmetNeed: 4.3 }, LVA: { name: 'Latvia', unmetNeed: 6.1 }, LTU: { name: 'Lithuania', unmetNeed: 5.8 }, NOR: { name: 'Norway', unmetNeed: 2.5 }, SWE: { name: 'Sweden', unmetNeed: 2.8 }, GBR: { name: 'United Kingdom', unmetNeed: 3.7 },
+                ALB: { name: 'Albania', unmetNeed: 8.1 }, BIH: { name: 'Bosnia and Herzegovina', unmetNeed: 10.2 }, HRV: { name: 'Croatia', unmetNeed: 5.9 }, GRC: { name: 'Greece', unmetNeed: 5.2 }, ITA: { name: 'Italy', unmetNeed: 4.1 }, MLT: { name: 'Malta', unmetNeed: 4.8 }, MNE: { name: 'Montenegro', unmetNeed: 9.1 }, MKD: { name: 'North Macedonia', unmetNeed: 9.5 }, PRT: { name: 'Portugal', unmetNeed: 3.9 }, SRB: { name: 'Serbia', unmetNeed: 8.8 }, SVN: { name: 'Slovenia', unmetNeed: 4.0 }, ESP: { name: 'Spain', unmetNeed: 3.5 },
+                AUT: { name: 'Austria', unmetNeed: 3.8 }, BEL: { name: 'Belgium', unmetNeed: 3.3 }, FRA: { name: 'France', unmetNeed: 3.0 }, DEU: { name: 'Germany', unmetNeed: 3.2 }, LUX: { name: 'Luxembourg', unmetNeed: 2.8 }, NLD: { name: 'Netherlands', unmetNeed: 2.9 }, CHE: { name: 'Switzerland', unmetNeed: 2.6 },
+                CAN: { name: 'Canada', unmetNeed: 8.5 }, USA: { name: 'United States', unmetNeed: 9.9 }, GRL: { name: 'Greenland', unmetNeed: 'N/A' },
+                BLZ: { name: 'Belize', unmetNeed: 11.2 }, CRI: { name: 'Costa Rica', unmetNeed: 6.1 }, SLV: { name: 'El Salvador', unmetNeed: 8.8 }, GTM: { name: 'Guatemala', unmetNeed: 14.5 }, HND: { name: 'Honduras', unmetNeed: 13.1 }, MEX: { name: 'Mexico', unmetNeed: 7.9 }, NIC: { name: 'Nicaragua', unmetNeed: 10.2 }, PAN: { name: 'Panama', unmetNeed: 9.3 },
+                ARG: { name: 'Argentina', unmetNeed: 6.7 }, BOL: { name: 'Bolivia', unmetNeed: 12.8 }, BRA: { name: 'Brazil', unmetNeed: 5.5 }, CHL: { name: 'Chile', unmetNeed: 4.9 }, COL: { name: 'Colombia', unmetNeed: 6.2 }, ECU: { name: 'Ecuador', unmetNeed: 9.1 }, GUY: { name: 'Guyana', unmetNeed: 15.2 }, PRY: { name: 'Paraguay', unmetNeed: 9.8 }, PER: { name: 'Peru', unmetNeed: 7.9 }, SUR: { name: 'Suriname', unmetNeed: 11.1 }, URY: { name: 'Uruguay', unmetNeed: 6.3 }, VEN: { name: 'Venezuela', unmetNeed: 11.4 },
+                CUB: { name: 'Cuba', unmetNeed: 7.1 }, DOM: { name: 'Dominican Republic', unmetNeed: 10.1 }, HTI: { name: 'Haiti', unmetNeed: 33.5 }, JAM: { name: 'Jamaica', unmetNeed: 9.2 }, TTO: { name: 'Trinidad and Tobago', unmetNeed: 8.7 },
+                AUS: { name: 'Australia', unmetNeed: 5.1 }, NZL: { name: 'New Zealand', unmetNeed: 4.8 }, FJI: { name: 'Fiji', unmetNeed: 10.2 }, NCL: { name: 'New Caledonia', unmetNeed: 'N/A' }, PNG: { name: 'Papua New Guinea', unmetNeed: 26.8 }, SLB: { name: 'Solomon Islands', unmetNeed: 21.1 }, VUT: { name: 'Vanuatu', unmetNeed: 19.8 },
+                DZA: { name: 'Algeria', unmetNeed: 11.1 }, EGY: { name: 'Egypt', unmetNeed: 8.8 }, LBY: { name: 'Libya', unmetNeed: 14.2 }, MAR: { name: 'Morocco', unmetNeed: 7.9 }, SDN: { name: 'Sudan', unmetNeed: 24.3 }, TUN: { name: 'Tunisia', unmetNeed: 6.9 },
+                AGO: { name: 'Angola', unmetNeed: 31.5 }, CMR: { name: 'Cameroon', unmetNeed: 23.4 }, CAF: { name: 'Central African Republic', unmetNeed: 28.7 }, TCD: { name: 'Chad', unmetNeed: 25.1 }, COG: { name: 'Congo', unmetNeed: 26.1 }, COD: { name: 'DR Congo', unmetNeed: 27.5 }, GNQ: { name: 'Equatorial Guinea', unmetNeed: 34.1 }, GAB: { name: 'Gabon', unmetNeed: 22.8 }, STP: { name: 'Sao Tome and Principe', unmetNeed: 24.5 },
+                BDI: { name: 'Burundi', unmetNeed: 18.9 }, COM: { name: 'Comoros', unmetNeed: 20.1 }, DJI: { name: 'Djibouti', unmetNeed: 22.3 }, ERI: { name: 'Eritrea', unmetNeed: 37.0 }, ETH: { name: 'Ethiopia', unmetNeed: 21.5 }, KEN: { name: 'Kenya', unmetNeed: 14.1 }, MDG: { name: 'Madagascar', unmetNeed: 17.8 }, MWI: { name: 'Malawi', unmetNeed: 13.8 }, MUS: { name: 'Mauritius', unmetNeed: 8.1 }, MOZ: { name: 'Mozambique', unmetNeed: 14.2 }, RWA: { name: 'Rwanda', unmetNeed: 10.1 }, SYC: { name: 'Seychelles', unmetNeed: 'N/A' }, SOM: { name: 'Somalia', unmetNeed: 26.8 }, SSD: { name: 'South Sudan', unmetNeed: 34.9 }, UGA: { name: 'Uganda', unmetNeed: 17.1 }, TZA: { name: 'Tanzania', unmetNeed: 16.5 }, ZMB: { name: 'Zambia', unmetNeed: 15.3 }, ZWE: { name: 'Zimbabwe', unmetNeed: 10.2 },
+                BWA: { name: 'Botswana', unmetNeed: 11.8 }, SWZ: { name: 'Eswatini', unmetNeed: 11.1 }, LSO: { name: 'Lesotho', unmetNeed: 12.3 }, NAM: { name: 'Namibia', unmetNeed: 14.2 }, ZAF: { name: 'South Africa', unmetNeed: 12.9 },
+                BEN: { name: 'Benin', unmetNeed: 25.4 }, BFA: { name: 'Burkina Faso', unmetNeed: 21.8 }, CPV: { name: 'Cabo Verde', unmetNeed: 15.1 }, CIV: { name: 'Côte d\'Ivoire', unmetNeed: 22.3 }, GMB: { name: 'Gambia', unmetNeed: 24.8 }, GHA: { name: 'Ghana', unmetNeed: 22.2 }, GIN: { name: 'Guinea', unmetNeed: 29.8 }, GNB: { name: 'Guinea-Bissau', unmetNeed: 28.1 }, LBR: { name: 'Liberia', unmetNeed: 31.1 }, MLI: { name: 'Mali', unmetNeed: 23.5 }, MRT: { name: 'Mauritania', unmetNeed: 21.3 }, NER: { name: 'Niger', unmetNeed: 18.9 }, NGA: { name: 'Nigeria', unmetNeed: 19.0 }, SEN: { name: 'Senegal', unmetNeed: 22.9 }, SLE: { name: 'Sierra Leone', unmetNeed: 28.3 }, TGO: { name: 'Togo', unmetNeed: 24.1 }, ESH: { name: 'Western Sahara', unmetNeed: 'N/A' }
+            };
+            
+            const geoJsonUrl = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
+
+            map = L.map('world-map', {
+                center: [20, 0],
+                zoom: 2,
+                maxBounds: [[-90, -180], [90, 180]],
+                attributionControl: false,
+                zoomControl: false,
+            });
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+                maxZoom: 10,
+                minZoom: 2
+            }).addTo(map);
+
+            const geoJsonLayer = L.geoJson(null, {
+                style: function(feature) {
+                    const countryCode = feature.id;
+                    const data = countryData[countryCode];
+                    const value = data ? data.unmetNeed : null;
+                    let color = '#333'; // Default no-data color
+                    if(value) {
+                         if (value > 20) color = '#004d4d'; // Darkest Teal
+                         else if (value > 10) color = '#008080'; // Teal
+                         else color = '#4db6ac'; // Light Teal
+                    }
+                    return {
+                        fillColor: color,
+                        weight: 0.5,
+                        opacity: 1,
+                        color: 'black',
+                        fillOpacity: 0.8
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    layer.on({
+                        mousemove: function(e) {
+                            const countryCode = feature.id;
+                            const data = countryData[countryCode];
+                            if (data) {
+                                let tooltipContent = `<h4>${data.name}</h4><p><strong>Unmet Need:</strong> ${data.unmetNeed || 'N/A'}%</p>`;
+                                if (countryCode === 'PAK') {
+                                   tooltipContent += `<p><strong>CPR:</strong> ${data.cpr}</p><p><strong>MMR:</strong> ${data.mmr}</p>`;
+                                }
+                                els.mapTooltip.innerHTML = tooltipContent;
+                                els.mapTooltip.style.opacity = 1;
+                                els.mapTooltip.style.left = `${e.originalEvent.clientX + 15}px`;
+                                els.mapTooltip.style.top = `${e.originalEvent.clientY + 15}px`;
+                            }
+                        },
+                        mouseout: function() {
+                           els.mapTooltip.style.opacity = 0;
+                        },
+                        click: function(e) {
+                            map.fitBounds(e.target.getBounds());
+                        }
+                    });
+                }
+            }).addTo(map);
+            
+             // Fetch and add GeoJSON data
+            fetch(geoJsonUrl)
+                .then(response => response.json())
+                .then(data => {
+                    geoJsonLayer.addData(data);
+                })
+                .catch(error => console.error('Error loading GeoJSON data:', error));
+        }
+
+        function initInteractiveChart() {
+            if (!els.trendChart) return;
+            const dataPoints = [
+                { year: 2000, value: 48, cx: 30, cy: 52 },
+                { year: 2006, value: 52, cx: 70, cy: 45 },
+                { year: 2012, value: 55, cx: 110, cy: 40 },
+                { year: 2018, value: 56.5, cx: 150, cy: 35 },
+                { year: 2024, value: 57.4, cx: 180, cy: 33 }
+            ];
+
+            const polylinePoints = dataPoints.map(p => `${p.cx},${p.cy}`).join(' ');
+            let chartHTML = `<polyline class="trend-line" points="${polylinePoints}" />`;
+
+            dataPoints.forEach(p => {
+                chartHTML += `<circle class="trend-point" cx="${p.cx}" cy="${p.cy}" data-year="${p.year}" data-value="${p.value}"></circle>`;
+                chartHTML += `<text class="chart-tooltip-text" x="${p.cx}" y="${p.cy - 8}">${p.value}% (${p.year})</text>`;
+            });
+            
+            els.trendChart.innerHTML += chartHTML;
+
+            const points = els.trendChart.querySelectorAll('.trend-point');
+            const tooltips = els.trendChart.querySelectorAll('.chart-tooltip-text');
+
+            points.forEach((point, index) => {
+                point.addEventListener('mouseover', () => {
+                    tooltips[index].style.opacity = 1;
+                });
+                point.addEventListener('mouseout', () => {
+                     tooltips[index].style.opacity = 0;
+                });
+            });
+        }
+        
+        function initModuleModal() {
+            const moduleContent = {
+                relationships: {
+                    title: "Module: Relationships",
+                    content: `<h4>Key Concepts</h4>
+                              <p>This module explores the nature of diverse relationships, including those with family, friends, peers, and romantic partners. It emphasizes mutual respect, consent, and effective communication as the cornerstones of healthy interactions.</p>
+                              <h4>Learning Objectives</h4>
+                              <ul>
+                                <li>Define consent and identify its importance in all interactions.</li>
+                                <li>Analyze the qualities of healthy vs. unhealthy relationships.</li>
+                                <li>Develop communication skills for expressing needs and boundaries.</li>
+                                <li>Understand the role of family and culture in shaping relationship norms.</li>
+                              </ul>`
+                },
+                gender: {
+                    title: "Module: Understanding Gender",
+                    content: `<h4>Key Concepts</h4>
+                              <p>This module introduces learners to the concepts of gender identity, gender expression, and gender stereotypes. It aims to foster an understanding of gender as a social construct and promote gender equality.</p>
+                              <h4>Learning Objectives</h4>
+                              <ul>
+                                <li>Differentiate between sex, gender, and sexual orientation.</li>
+                                <li>Identify and challenge harmful gender stereotypes in media and society.</li>
+                                <li>Explore the diversity of gender identities and expressions.</li>
+                                <li>Advocate for policies and behaviors that promote gender equity.</li>
+                              </ul>`
+                },
+                safety: {
+                    title: "Module: Violence and Staying Safe",
+                    content: `<h4>Key Concepts</h4>
+                              <p>This module provides critical information on identifying and preventing various forms of violence, including gender-based violence, bullying, and online harassment. It equips learners with strategies for personal safety and seeking help.</p>
+                              <h4>Learning Objectives</h4>
+                              <ul>
+                                <li>Recognize different forms of violence and their impact.</li>
+                                <li>Understand the concept of consent as a key prevention tool.</li>
+                                <li>Develop strategies for online safety and digital citizenship.</li>
+                                <li>Identify trusted adults and resources for seeking help and support.</li>
+                              </ul>`
+                },
+                health: {
+                    title: "Module: Health & Well-being",
+                    content: `<h4>Key Concepts</h4>
+                              <p>This module covers the physical, social, and emotional aspects of sexual and reproductive health. Topics include puberty, human anatomy, contraception, and the prevention of sexually transmitted infections (STIs).</p>
+                              <h4>Learning Objectives</h4>
+                              <ul>
+                                <li>Describe the physical and emotional changes that occur during puberty.</li>
+                                <li>Understand the human reproductive system and processes.</li>
+                                <li>Evaluate various contraceptive methods and their effectiveness.</li>
+                                <li>Learn about STI prevention, testing, and treatment.</li>
+                              </ul>`
+                }
+            };
+            
+            const exploreBtns = document.querySelectorAll('.cse-explore-btn');
+            
+            exploreBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const moduleKey = btn.dataset.module;
+                    const data = moduleContent[moduleKey];
+                    if (data) {
+                        els.modalTitle.textContent = data.title;
+                        els.modalContent.innerHTML = data.content;
+                        toggleModal(els.moduleModalOverlay, true);
+                    }
+                });
+            });
+
+            els.modalCloseBtn.addEventListener('click', () => toggleModal(els.moduleModalOverlay, false));
+        }
+
+        function initSearch() {
+            if (!els.searchForm) return;
+
+            const knowledgeBase = [
+                {
+                    keywords: ['maternal mortality', 'mmr'],
+                    type: 'Definition',
+                    title: 'Maternal Mortality Ratio (MMR)',
+                    content: 'The number of maternal deaths during a given time period per 100,000 live births during the same time period. The global MMR in 2020 was 223.'
+                },
+                {
+                    keywords: ['contraceptive prevalence', 'cpr'],
+                    type: 'Definition',
+                    title: 'Contraceptive Prevalence Rate (CPR)',
+                    content: 'The percentage of women of reproductive age (15-49 years) who are using (or whose partner is using) a contraceptive method at a given point in time.'
+                },
+                 {
+                    keywords: ['unmet need', 'family planning'],
+                    type: 'Definition',
+                    title: 'Unmet Need for Family Planning',
+                    content: 'The percentage of women of reproductive age who want to stop or delay childbearing but are not using any method of contraception.'
+                },
+                {
+                    keywords: ['pakistan', 'pakistan data'],
+                    type: 'Data',
+                    title: 'Data for Pakistan',
+                    content: 'Unmet Need for FP: 17.3%<br>CPR (Modern): 34.2%<br>MMR: 186 per 100,000 live births<br>Adolescent Birth Rate: 38 per 1,000'
+                },
+                 {
+                    keywords: ['nigeria', 'nigeria data'],
+                    type: 'Data',
+                    title: 'Data for Nigeria',
+                    content: 'Unmet Need for FP: 19.0%<br>CPR (Modern): 12.0%<br>MMR: 917 per 100,000 live births<br>Adolescent Birth Rate: 101 per 1,000'
+                },
+                {
+                    keywords: ['consent', 'relationships'],
+                    type: 'Concept',
+                    title: 'Consent',
+                    content: 'Consent is an agreement between participants to engage in an activity. It is a key concept in the <a href="#cse" class="result-link">Relationships Module</a> and the <a href="#cse" class="result-link">Violence and Staying Safe Module</a>.'
+                },
+                {
+                    keywords: ['gender', 'gender equality'],
+                    type: 'Concept',
+                    title: 'Gender Equality',
+                    content: 'Gender equality is when people of all genders have equal rights, responsibilities and opportunities. Explored in the <a href="#cse" class="result-link">Understanding Gender Module</a>.'
+                },
+            ];
+
+            els.searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const query = els.searchInput.value.toLowerCase().trim();
+                if (!query) return;
+
+                const results = knowledgeBase.filter(item => 
+                    item.keywords.some(keyword => query.includes(keyword))
+                );
+
+                displaySearchResults(results, query);
+            });
+
+            function displaySearchResults(results, query) {
+                let html = '';
+                if (results.length > 0) {
+                    results.forEach(result => {
+                        html += `
+                            <div class="search-result-item">
+                                <p class="search-result-type">${result.type}</p>
+                                <h4 class="search-result-title">${result.title}</h4>
+                                <p class="search-result-snippet">${result.content}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = `<p class="no-results-message">No results found for "${query}". Try searching for a specific country, indicator (like 'MMR'), or concept (like 'consent').</p>`;
+                }
+                els.searchResultsContent.innerHTML = html;
+                toggleModal(els.searchResultsOverlay, true);
+            }
+            
+            els.searchResultsCloseBtn.addEventListener('click', () => toggleModal(els.searchResultsOverlay, false));
+        }
+
+        function toggleModal(modalOverlay, show) {
+            if (!modalOverlay) return;
+            if (show) {
+                document.body.classList.add('modal-open');
+                modalOverlay.classList.add('is-visible');
+            } else {
+                document.body.classList.remove('modal-open');
+                modalOverlay.classList.remove('is-visible');
+            }
+        }
+        
+        // Generic modal escape listener
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.is-visible').forEach(modal => {
+                    toggleModal(modal, false);
+                });
+            }
+        });
+        
+        function initMotionAndBackground() {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) { document.body.classList.add('reduced-motion'); return; }
+            initCosmicBackground();
+        }
+
+        function initCosmicBackground() {
+            if (typeof THREE === 'undefined' || !els.cosmicBackground || cosmicBgAnimator) return;
+            try {
+                const container = els.cosmicBackground;
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setClearColor(0x000000, 0);
+                container.appendChild(renderer.domElement);
+                const particleCount = 1500;
+                const particles = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const colorPalette = [
+                    new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--color-accent-gold').trim()),
+                    new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--color-accent-teal').trim()),
+                    new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim())
+                ];
+                for (let i = 0; i < particleCount; i++) {
+                    positions[i * 3] = (Math.random() - 0.5) * 1500;
+                    positions[i * 3 + 1] = (Math.random() - 0.5) * 1500;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 1500;
+                    const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                    colors[i * 3] = color.r; colors[i * 3 + 1] = color.g; colors[i * 3 + 2] = color.b;
+                }
+                particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                const particleMaterial = new THREE.PointsMaterial({ size: 2, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+                const particleSystem = new THREE.Points(particles, particleMaterial);
+                scene.add(particleSystem);
+                camera.position.z = 400;
+                let animationId;
+                const animate = () => {
+                    animationId = requestAnimationFrame(animate);
+                    particleSystem.rotation.y += 0.0003;
+                    renderer.render(scene, camera);
+                };
+                cosmicBgAnimator = { animate, stop: () => { if(animationId) cancelAnimationFrame(animationId); } };
+                animate();
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            } catch (error) {
+                console.error('Three.js background failed:', error);
+                if(els.cosmicBackground) els.cosmicBackground.style.display = 'none';
+            }
+        }
+
+        function initSiteAnimations() {
+            if (typeof gsap === 'undefined') return;
+            const mm = gsap.matchMedia();
+            mm.add("(prefers-reduced-motion: no-preference)", () => {
+                gsap.utils.toArray('.reveal-up').forEach(elem => {
+                    gsap.fromTo(elem, { opacity: 0, y: 50 }, {
+                        opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+                        scrollTrigger: { trigger: elem, start: 'top 90%', once: true }
+                    });
+                });
+            });
+        }
+        
+        document.addEventListener('visibilitychange', () => {
+            if (cosmicBgAnimator) {
+                document.hidden ? cosmicBgAnimator.stop() : cosmicBgAnimator.animate();
+            }
+        });
+
+    });
+    </script>
+</body>
+</html>
+
