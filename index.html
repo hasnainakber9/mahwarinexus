@@ -33,25 +33,34 @@
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       html { scroll-behavior: smooth; }
       body { background-color: var(--color-primary); color: var(--color-text); font-family: var(--font-primary); line-height: 1.6; overflow-x: hidden; position: relative; }
-      body.modal-open { overflow: hidden; }
+      body.modal-open, body.nav-open { overflow: hidden; }
       .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
       
       .cosmic-background { position: fixed; inset: 0; z-index: var(--z-background); overflow: hidden; }
       .cosmic-background canvas { display: block; width: 100%; height: 100%; }
-      .container { width: 100%; max-width: 1400px; margin: auto; padding: 0 var(--space-xl); }
-      .content-section { padding: var(--space-2xl) 0; position: relative; z-index: var(--z-content); }
+      .container { width: 100%; max-width: 1400px; margin: auto; padding: 0 var(--space-lg); }
+      .content-section { padding: var(--space-xl) 0; position: relative; z-index: var(--z-content); }
       main { padding-top: var(--header-height); }
       
       .site-header { position: fixed; top: 0; left: 0; width: 100%; z-index: var(--z-navigation); height: var(--header-height); display: flex; align-items: center; background-color: rgba(26, 18, 11, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--color-glass-border); }
       .site-header .container { display: flex; justify-content: space-between; align-items: center; }
       .nav-logo { font-family: var(--font-heading); font-weight: 700; font-size: 1.75rem; color: var(--color-accent-gold); text-decoration: none; }
-      .header-right { display: flex; align-items: center; gap: var(--space-lg); }
-      .main-nav { display: flex; align-items: center; gap: var(--space-lg); }
+      .main-nav { display: none; }
       .nav-link { font-family: var(--font-heading); font-weight: 700; font-size: 1rem; color: var(--color-text); text-decoration: none; padding: 0.25rem; transition: color var(--transition-normal); position: relative; }
       .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px; background: var(--color-accent-gold); transform: scaleX(0); transform-origin: center; transition: transform 0.3s ease; }
       .nav-link:hover, .nav-link.active { color: var(--color-accent-gold); }
       .nav-link.active::after { transform: scaleX(1); }
       
+      .mobile-nav-toggle { display: block; z-index: 1001; background: none; border: none; padding: 0.5rem; }
+      .hamburger-bar { display: block; width: 24px; height: 2px; background: var(--color-text); margin: 5px 0; transition: all 0.3s ease; }
+      .nav-open .hamburger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .nav-open .hamburger-bar:nth-child(2) { opacity: 0; }
+      .nav-open .hamburger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+      .mobile-nav { position: fixed; inset: 0; background: rgba(13, 9, 7, 0.95); backdrop-filter: blur(10px); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-xl); transform: translateY(-100%); transition: transform 0.4s ease-out; }
+      .nav-open .mobile-nav { transform: translateY(0); }
+      .mobile-nav .nav-link { font-size: 1.75rem; }
+
       .btn { display: inline-block; font-family: var(--font-heading); font-weight: 700; font-size: 1rem; padding: 0.5rem 1.25rem; border-radius: var(--radius-full); text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: all var(--transition-normal); }
       .btn-primary { background-color: var(--color-accent-teal); color: var(--color-primary); }
       .btn-primary:hover { background-color: var(--color-accent-gold); }
@@ -59,60 +68,28 @@
       .btn-outline:hover { background-color: var(--color-accent-gold); color: var(--color-primary); }
 
       h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; color: var(--color-text); line-height: 1.2; }
-      h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: var(--space-md); }
-      h2 { font-size: clamp(2rem, 4vw, 2.75rem); margin-bottom: var(--space-lg); color: var(--color-accent-gold); }
-      h3 { font-size: 1.5rem; margin-bottom: var(--space-md); color: var(--color-accent-teal); }
+      h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); margin-bottom: var(--space-md); }
+      h2 { font-size: clamp(1.8rem, 5vw, 2.75rem); margin-bottom: var(--space-lg); color: var(--color-accent-gold); }
+      h3 { font-size: 1.25rem; margin-bottom: var(--space-md); color: var(--color-accent-teal); }
       p { color: var(--color-medium); max-width: 65ch; }
 
       .hero-section { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+      .hero-section p { margin-left: auto; margin-right: auto; }
       
-      .marquee {
-          width: 100%;
-          overflow: hidden;
-          padding: 1rem 0;
-          white-space: nowrap;
-          border-top: 1px solid var(--color-glass-border);
-          border-bottom: 1px solid var(--color-glass-border);
-      }
-      .marquee-content {
-          display: inline-block;
-          animation: marquee 30s linear infinite;
-          font-family: var(--font-heading);
-          font-size: 1.2rem;
-          color: var(--color-medium);
-      }
-      .marquee-content span {
-          margin: 0 2rem;
-      }
-      .marquee-content span strong {
-          color: var(--color-accent-gold);
-      }
-      @keyframes marquee {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-      }
+      .marquee { width: 100%; overflow: hidden; padding: 1rem 0; white-space: nowrap; border-top: 1px solid var(--color-glass-border); border-bottom: 1px solid var(--color-glass-border); }
+      .marquee-content { display: inline-block; animation: marquee 30s linear infinite; font-family: var(--font-heading); font-size: 1.2rem; color: var(--color-medium); }
+      .marquee-content span { margin: 0 2rem; }
+      .marquee-content span strong { color: var(--color-accent-gold); }
+      @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
       .search-bar { display: flex; max-width: 700px; margin: var(--space-2xl) auto; }
       .search-input { flex-grow: 1; padding: 0.875rem 1.25rem; background-color: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-md) 0 0 var(--radius-md); color: var(--color-text); font-family: var(--font-primary); font-size: 1rem; }
       .search-input:focus { outline: none; border-color: var(--color-accent-gold); }
       .search-btn { padding: 0.875rem 1.5rem; background-color: var(--color-accent-teal); border: none; border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--color-primary); font-weight: 700; cursor: pointer; }
 
-      .dynamic-chapters-wrapper { position: relative; }
-      .dynamic-chapters-pinned { height: 100vh; width: 100%; overflow: hidden; position: relative; }
+      .dynamic-chapters-wrapper { display: none; } /* Hidden on mobile */
       .chapter-background { position: absolute; inset: 0; background-size: cover; background-position: center; will-change: transform; }
       .dynamic-chapters-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(26,18,11,0.9) 0%, rgba(26,18,11,0.7) 30%, rgba(26,18,11,0.5) 70%, rgba(26,18,11,0.8) 100%); }
-      .dynamic-chapters-container { height: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; padding: 0 var(--space-xl); max-width: 1400px; margin: auto; }
-      
-      .chapter-content-area { flex: 1 1 60%; min-width: 0; }
-      .chapter-content { min-height: 400px; display: flex; flex-direction: column; justify-content: center; background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-xl); padding: var(--space-2xl); will-change: opacity, transform; }
-      .chapter-content h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: var(--space-md); color: var(--color-accent-teal); }
-      .chapter-content h3 { font-size: clamp(1.1rem, 1.8vw, 1.4rem); margin-bottom: var(--space-lg); color: var(--color-accent-gold); }
-      .chapter-content p { font-size: 1.1rem; margin-bottom: var(--space-xl); max-width: 60ch; color: var(--color-text); }
-      
-      .chapter-navigation { flex-shrink: 0; width: 300px; display: flex; flex-direction: column; gap: var(--space-lg); margin-left: var(--space-2xl); }
-      .chapter-nav-item { cursor: pointer; color: var(--color-medium); font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; transition: color 0.3s ease, transform 0.3s ease; }
-      .chapter-nav-item:hover { color: var(--color-accent-gold); transform: translateX(5px); }
-      .chapter-nav-item.active { color: var(--color-accent-teal); transform: translateX(10px); }
       
       .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg); }
       .stat-card { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); padding: var(--space-lg); transition: all var(--transition-normal); }
@@ -125,10 +102,7 @@
       .stat-source { font-size: 0.75rem; color: var(--color-medium); margin-top: 0.5rem; font-style: italic; }
 
       .dashboard-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: var(--space-xl); margin-top: var(--space-2xl); }
-      @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(3, 1fr); } }
       .chart-container, .map-container { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-xl); padding: var(--space-lg); min-height: 400px; display: flex; flex-direction: column; }
-      .map-container { grid-column: 1 / -1; }
-      @media (min-width: 1024px) { .map-container { grid-column: span 2 / span 2; } }
       .visualization-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 450px; }
 
       #world-map { width: 100%; height: 100%; background-color: transparent; border-radius: var(--radius-lg); }
@@ -198,16 +172,11 @@
       .form-success-title { font-family: var(--font-heading); font-weight: 700; font-size: 2rem; color: var(--color-accent-teal); }
 
       .site-footer { padding: 3rem 0; background-color: var(--color-dark); border-top: 1px solid var(--color-glass-border); }
-      .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-2xl); margin-bottom: var(--space-2xl); }
-      .footer-about h3 { font-size: 1.5rem; color: var(--color-accent-gold); margin-bottom: var(--space-md); }
-      .footer-about p { font-size: 0.9rem; max-width: 35ch; }
-      .footer-links h4 { font-size: 1.1rem; color: var(--color-text); margin-bottom: var(--space-md); }
-      .footer-links ul { list-style: none; }
-      .footer-links li { margin-bottom: 0.5rem; }
+      .footer-content { display: grid; grid-template-columns: 1fr; gap: var(--space-2xl); margin-bottom: var(--space-2xl); text-align: center;}
+      .footer-about h3, .footer-links h4, .footer-social h4 { margin-bottom: var(--space-md); }
+      .footer-links ul, .social-icons { list-style: none; display: flex; justify-content: center; gap: var(--space-lg);}
       .footer-links a { color: var(--color-medium); text-decoration: none; font-size: 0.9rem; transition: color var(--transition-normal); }
       .footer-links a:hover { color: var(--color-accent-gold); }
-      .footer-social h4 { font-size: 1.1rem; color: var(--color-text); margin-bottom: var(--space-md); }
-      .social-icons { display: flex; gap: var(--space-lg); }
       .social-icons a { color: var(--color-medium); font-size: 1.5rem; text-decoration: none; transition: color var(--transition-normal); }
       .social-icons a:hover { color: var(--color-accent-gold); }
       .footer-bottom { border-top: 1px solid var(--color-glass-border); padding-top: var(--space-lg); text-align: center; }
@@ -215,6 +184,23 @@
 
 
       .reveal-up { opacity: 0; transform: translateY(40px); }
+
+      @media (min-width: 768px) {
+        .content-section { padding: var(--space-2xl) 0; }
+        h3 { font-size: 1.5rem; }
+        .main-nav { display: flex; }
+        .mobile-nav, .mobile-nav-toggle { display: none; }
+        .dynamic-chapters-wrapper { display: block; }
+        .dynamic-chapters-pinned { height: 100vh; }
+        .dynamic-chapters-container { flex-direction: row; }
+        .chapter-content-area { max-width: 60%; }
+        .chapter-navigation { margin-left: var(--space-2xl); }
+        .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
+        .map-container { grid-column: span 2 / span 2; }
+        .footer-content { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); text-align: left; }
+        .footer-links ul, .social-icons { justify-content: flex-start; }
+      }
+
     </style>
 </head>
 <body>
@@ -245,17 +231,28 @@
         <header id="site-header" class="site-header">
             <div class="container">
                 <a href="#dashboard" class="nav-logo">MahwariNexus</a>
-                <div class="header-right">
-                    <nav class="main-nav">
-                        <a href="#dashboard" class="nav-link">Dashboard</a>
-                        <a href="#cse" class="nav-link">CSE Curricula</a>
-                        <a href="#reports" class="nav-link">Reports</a>
-                        <a href="#explorer" class="nav-link">Data Explorer</a>
-                        <a href="#contact" class="nav-link">Contact</a>
-                    </nav>
-                </div>
+                <nav class="main-nav">
+                    <a href="#dashboard" class="nav-link">Dashboard</a>
+                    <a href="#cse" class="nav-link">CSE Curricula</a>
+                    <a href="#reports" class="nav-link">Reports</a>
+                    <a href="#explorer" class="nav-link">Data Explorer</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </nav>
+                <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                </button>
             </div>
         </header>
+
+        <nav class="mobile-nav" id="mobile-nav">
+            <a href="#dashboard" class="nav-link">Dashboard</a>
+            <a href="#cse" class="nav-link">CSE Curricula</a>
+            <a href="#reports" class="nav-link">Reports</a>
+            <a href="#explorer" class="nav-link">Data Explorer</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </nav>
 
         <main id="main-content">
             <section id="dashboard" class="content-section">
@@ -597,6 +594,8 @@
             chapterBackground: document.querySelector('.chapter-background'),
             chapterContent: document.querySelector('.chapter-content'),
             chapterNav: document.querySelector('.chapter-navigation'),
+            mobileNavToggle: document.getElementById('mobile-nav-toggle'),
+            mobileNav: document.getElementById('mobile-nav'),
         };
 
         let cosmicBgAnimator = null;
@@ -616,9 +615,11 @@
 
 
         function initNavigation() {
-            document.querySelectorAll('.main-nav a[href^="#"], .nav-logo[href^="#"]').forEach(anchor => {
+            const navLinks = document.querySelectorAll('.main-nav a[href^="#"], .nav-logo[href^="#"], .mobile-nav a[href^="#"]');
+            navLinks.forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
+                    document.body.classList.remove('nav-open');
                     const href = this.getAttribute('href');
                     if (href && href.startsWith('#')) {
                         let target = document.querySelector(href);
@@ -633,21 +634,24 @@
                 });
             });
 
+            els.mobileNavToggle.addEventListener('click', () => {
+                document.body.classList.toggle('nav-open');
+            });
+
             gsap.utils.toArray('main .content-section[id]').forEach(section => {
                 ScrollTrigger.create({
                     trigger: section,
                     start: "top center",
                     end: "bottom center",
                     onToggle: self => {
+                        const id = section.getAttribute('id');
                         document.querySelectorAll('.nav-link.active').forEach(l => l.classList.remove('active'));
-                        const navLink = document.querySelector(`.nav-link[href="#${section.id}"]`);
-                        if (navLink && self.isActive) {
-                           navLink.classList.add('active');
-                        }
+                        document.querySelectorAll(`.nav-link[href="#${id}"]`).forEach(link => {
+                           if (self.isActive) link.classList.add('active');
+                        });
                     }
                 });
             });
-             // Set initial active link
             if (!document.querySelector('.nav-link.active')) {
                 document.querySelector('.nav-link[href="#dashboard"]')?.classList.add('active');
             }
@@ -656,7 +660,6 @@
         async function initInteractiveMap() {
             if (!els.worldMap || !els.mapTooltip) return;
 
-            // Data from World Bank, UNFPA, WHO (latest available, simplified for demo)
             const countryData = {
                 AFG: { name: 'Afghanistan', unmetNeed: 29.5 }, BGD: { name: 'Bangladesh', unmetNeed: 11.9 }, BTN: { name: 'Bhutan', unmetNeed: 14.2 }, IND: { name: 'India', unmetNeed: 9.4 }, NPL: { name: 'Nepal', unmetNeed: 12.7 }, PAK: { name: 'Pakistan', unmetNeed: 17.3, cpr: '34.2%', mmr: '186' }, LKA: { name: 'Sri Lanka', unmetNeed: 7.4 }, 
                 CHN: { name: 'China', unmetNeed: 2.1 }, JPN: { name: 'Japan', unmetNeed: 4.8 }, MNG: { name: 'Mongolia', unmetNeed: 13.1 }, PRK: { name: 'North Korea', unmetNeed: 8.1 }, KOR: { name: 'South Korea', unmetNeed: 2.8 },
@@ -1065,16 +1068,20 @@
             els.chapterNav.innerHTML = navHTML;
             const navItems = els.chapterNav.querySelectorAll('.chapter-nav-item');
 
-            let activeChapter = 0;
+            let activeChapter = -1; 
 
             function updateChapter(index, direction) {
-                if (!els.chapterContent) return;
-                const data = chapterData[index];
+                if (index === activeChapter || !els.chapterContent) return;
                 
+                const data = chapterData[index];
                 const yStart = direction === 'down' ? 50 : -50;
 
-                gsap.to(els.chapterContent, {
-                    opacity: 0, y: -yStart, duration: 0.4,
+                const tl = gsap.timeline();
+                tl.to(els.chapterContent, {
+                    opacity: 0,
+                    y: -yStart,
+                    duration: 0.3,
+                    ease: 'power2.in',
                     onComplete: () => {
                         els.chapterContent.innerHTML = `
                             <h2>${data.title}</h2>
@@ -1082,13 +1089,14 @@
                             <p>${data.description}</p>
                             <button class="btn btn-primary learn-more-btn" data-chapter-index="${index}">Learn More</button>
                         `;
-                        gsap.fromTo(els.chapterContent, { y: yStart, opacity: 0 }, { opacity: 1, y: 0, duration: 0.6 });
                     }
-                });
+                })
+                .fromTo(els.chapterContent, { y: yStart, opacity: 0 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
+
                 
                 gsap.to(els.chapterBackground, {
                     backgroundImage: `url(${data.image})`,
-                    duration: 1.5,
+                    duration: 1.2,
                     ease: 'power2.inOut'
                 });
 
@@ -1101,13 +1109,13 @@
                 pin: els.dynamicChaptersPinned,
                 scrub: 1,
                 start: "top top",
-                end: "+=2000", 
+                end: `+=${chapterData.length * 500}`, 
                 onUpdate: self => {
                     const progress = self.progress;
                     const index = Math.floor(progress * chapterData.length);
                     const safeIndex = Math.min(index, chapterData.length - 1);
                     if (safeIndex !== activeChapter) {
-                        updateChapter(safeIndex, self.direction === 1 ? 'down' : 'up');
+                         updateChapter(safeIndex, self.direction);
                     }
                 }
             });
@@ -1118,18 +1126,16 @@
                     const index = parseInt(item.dataset.index);
                     const trigger = ScrollTrigger.getByTrigger(els.dynamicChaptersWrapper);
                     if (trigger) {
-                        const newScroll = trigger.start + (index / (chapterData.length -1)) * (trigger.end - trigger.start);
+                        const newScroll = trigger.start + (index / (chapterData.length)) * (trigger.end - trigger.start) + 1;
                         gsap.to(window, { scrollTo: { y: newScroll, autoKill: false }, duration: 1, ease: 'power2.inOut' });
                     }
                 });
             });
 
-            // Initial content
             updateChapter(0, 'down');
             gsap.set(els.chapterBackground, {backgroundImage: `url(${chapterData[0].image})`});
             
-            // Event delegation for "Learn More" buttons
-            els.chapterContent.addEventListener('click', function(e) {
+            els.dynamicChaptersWrapper.addEventListener('click', function(e) {
                 if (e.target.classList.contains('learn-more-btn')) {
                     const chapterIndex = e.target.dataset.chapterIndex;
                     handleChapterDeepDive(chapterIndex);
