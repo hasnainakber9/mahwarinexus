@@ -25,6 +25,7 @@
           --font-heading: 'Cormorant Garamond', Georgia, serif;
           --header-height: 72px; --space-md: 1rem; --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
           --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+          --radius-full: 9999px;
           --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
           --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
           --transition-normal: 0.25s ease-out; --z-background: -1; --z-content: 1; --z-navigation: 100;
@@ -35,38 +36,84 @@
       body.modal-open { overflow: hidden; }
       .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
       
-      /* --- Main Layout & Background --- */
       .cosmic-background { position: fixed; inset: 0; z-index: var(--z-background); overflow: hidden; }
       .cosmic-background canvas { display: block; width: 100%; height: 100%; }
       .container { width: 100%; max-width: 1400px; margin: auto; padding: 0 var(--space-xl); }
       .content-section { padding: var(--space-2xl) 0; position: relative; z-index: var(--z-content); }
       main { padding-top: var(--header-height); }
       
-      /* --- Header --- */
       .site-header { position: fixed; top: 0; left: 0; width: 100%; z-index: var(--z-navigation); height: var(--header-height); display: flex; align-items: center; background-color: rgba(26, 18, 11, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--color-glass-border); }
       .site-header .container { display: flex; justify-content: space-between; align-items: center; }
       .nav-logo { font-family: var(--font-heading); font-weight: 700; font-size: 1.75rem; color: var(--color-accent-gold); text-decoration: none; }
+      .header-right { display: flex; align-items: center; gap: var(--space-lg); }
       .main-nav { display: flex; align-items: center; gap: var(--space-lg); }
       .nav-link { font-family: var(--font-heading); font-weight: 700; font-size: 1rem; color: var(--color-text); text-decoration: none; padding: 0.25rem; transition: color var(--transition-normal); position: relative; }
       .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px; background: var(--color-accent-gold); transform: scaleX(0); transform-origin: center; transition: transform 0.3s ease; }
       .nav-link:hover, .nav-link.active { color: var(--color-accent-gold); }
       .nav-link.active::after { transform: scaleX(1); }
-      .user-profile { font-family: var(--font-primary); font-size: 0.9rem; font-weight: 700; color: var(--color-medium); }
       
-      /* --- Dashboard Specific Typography --- */
+      .btn { display: inline-block; font-family: var(--font-heading); font-weight: 700; font-size: 1rem; padding: 0.5rem 1.25rem; border-radius: var(--radius-full); text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: all var(--transition-normal); }
+      .btn-primary { background-color: var(--color-accent-teal); color: var(--color-primary); }
+      .btn-primary:hover { background-color: var(--color-accent-gold); }
+      .btn-outline { background-color: transparent; color: var(--color-accent-gold); border-color: var(--color-accent-gold); }
+      .btn-outline:hover { background-color: var(--color-accent-gold); color: var(--color-primary); }
+
       h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; color: var(--color-text); line-height: 1.2; }
-      h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: var(--space-md); }
+      h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: var(--space-md); }
       h2 { font-size: clamp(2rem, 4vw, 2.75rem); margin-bottom: var(--space-lg); color: var(--color-accent-gold); }
       h3 { font-size: 1.5rem; margin-bottom: var(--space-md); color: var(--color-accent-teal); }
       p { color: var(--color-medium); max-width: 65ch; }
 
-      /* --- Search Bar --- */
-      .search-bar { display: flex; max-width: 700px; margin: var(--space-xl) 0; }
+      .hero-section { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+      
+      .marquee {
+          width: 100%;
+          overflow: hidden;
+          padding: 1rem 0;
+          white-space: nowrap;
+          border-top: 1px solid var(--color-glass-border);
+          border-bottom: 1px solid var(--color-glass-border);
+      }
+      .marquee-content {
+          display: inline-block;
+          animation: marquee 30s linear infinite;
+          font-family: var(--font-heading);
+          font-size: 1.2rem;
+          color: var(--color-medium);
+      }
+      .marquee-content span {
+          margin: 0 2rem;
+      }
+      .marquee-content span strong {
+          color: var(--color-accent-gold);
+      }
+      @keyframes marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+      }
+
+      .search-bar { display: flex; max-width: 700px; margin: var(--space-2xl) auto; }
       .search-input { flex-grow: 1; padding: 0.875rem 1.25rem; background-color: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-md) 0 0 var(--radius-md); color: var(--color-text); font-family: var(--font-primary); font-size: 1rem; }
       .search-input:focus { outline: none; border-color: var(--color-accent-gold); }
       .search-btn { padding: 0.875rem 1.5rem; background-color: var(--color-accent-teal); border: none; border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--color-primary); font-weight: 700; cursor: pointer; }
 
-      /* --- Stat Cards --- */
+      .dynamic-chapters-wrapper { position: relative; }
+      .dynamic-chapters-pinned { height: 100vh; width: 100%; overflow: hidden; position: relative; }
+      .chapter-background { position: absolute; inset: 0; background-size: cover; background-position: center; will-change: transform; }
+      .dynamic-chapters-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(26,18,11,0.9) 0%, rgba(26,18,11,0.7) 30%, rgba(26,18,11,0.5) 70%, rgba(26,18,11,0.8) 100%); }
+      .dynamic-chapters-container { height: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; padding: 0 var(--space-xl); max-width: 1400px; margin: auto; }
+      
+      .chapter-content-area { flex: 1 1 60%; min-width: 0; }
+      .chapter-content { min-height: 400px; display: flex; flex-direction: column; justify-content: center; background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-xl); padding: var(--space-2xl); will-change: opacity, transform; }
+      .chapter-content h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: var(--space-md); color: var(--color-accent-teal); }
+      .chapter-content h3 { font-size: clamp(1.1rem, 1.8vw, 1.4rem); margin-bottom: var(--space-lg); color: var(--color-accent-gold); }
+      .chapter-content p { font-size: 1.1rem; margin-bottom: var(--space-xl); max-width: 60ch; color: var(--color-text); }
+      
+      .chapter-navigation { flex-shrink: 0; width: 300px; display: flex; flex-direction: column; gap: var(--space-lg); margin-left: var(--space-2xl); }
+      .chapter-nav-item { cursor: pointer; color: var(--color-medium); font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; transition: color 0.3s ease, transform 0.3s ease; }
+      .chapter-nav-item:hover { color: var(--color-accent-gold); transform: translateX(5px); }
+      .chapter-nav-item.active { color: var(--color-accent-teal); transform: translateX(10px); }
+      
       .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg); }
       .stat-card { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); padding: var(--space-lg); transition: all var(--transition-normal); }
       .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--color-accent-teal); }
@@ -77,7 +124,6 @@
       .stat-change.negative { color: #f87171; }
       .stat-source { font-size: 0.75rem; color: var(--color-medium); margin-top: 0.5rem; font-style: italic; }
 
-      /* --- Chart & Map Containers --- */
       .dashboard-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: var(--space-xl); margin-top: var(--space-2xl); }
       @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(3, 1fr); } }
       .chart-container, .map-container { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-xl); padding: var(--space-lg); min-height: 400px; display: flex; flex-direction: column; }
@@ -85,22 +131,18 @@
       @media (min-width: 1024px) { .map-container { grid-column: span 2 / span 2; } }
       .visualization-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 450px; }
 
-      /* --- World Map & Tooltip --- */
       #world-map { width: 100%; height: 100%; background-color: transparent; border-radius: var(--radius-lg); }
       .leaflet-container { background: transparent; }
       .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9); }
       .leaflet-popup-content-wrapper, .leaflet-popup-tip { background-color: var(--color-dark); color: var(--color-text); box-shadow: none; border: 1px solid var(--color-glass-border); }
-
       #map-tooltip { position: fixed; background: var(--color-dark); color: var(--color-text); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; pointer-events: none; opacity: 0; transition: opacity 0.2s; border: 1px solid var(--color-accent-gold); z-index: 10001; max-width: 250px; }
       #map-tooltip h4 { color: var(--color-accent-gold); margin-bottom: 0.5rem; font-family: var(--font-heading); }
       #map-tooltip p { font-size: 0.85rem; margin: 0; line-height: 1.5; }
       #map-tooltip strong { color: var(--color-accent-teal); }
-      
       .map-legend { position: absolute; bottom: 10px; left: 10px; background-color: rgba(13, 9, 7, 0.7); padding: 0.5rem 1rem; border-radius: var(--radius-md); font-size: 0.8rem; z-index: 1000;}
       .legend-item { display: flex; align-items: center; margin-bottom: 0.25rem; }
       .legend-color { width: 12px; height: 12px; margin-right: 0.5rem; border-radius: 2px; }
 
-      /* --- Trend Chart & Tooltip --- */
       .trend-chart-svg { width: 100%; height: 100%; overflow: visible; }
       .trend-chart-svg .grid-line { stroke: var(--color-glass-border); stroke-width: 0.5; }
       .trend-chart-svg .axis-label { fill: var(--color-medium); font-size: 10px; font-family: var(--font-primary); }
@@ -109,7 +151,6 @@
       .trend-chart-svg .trend-point:hover { r: 5; }
       .chart-tooltip-text { fill: var(--color-text); font-size: 12px; text-anchor: middle; font-weight: bold; pointer-events: none; opacity: 0; transition: opacity 0.2s ease; }
 
-      /* --- CSE Curricula Section --- */
       .cse-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-lg); }
       .cse-card { background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); padding: var(--space-lg); display: flex; flex-direction: column; transition: all var(--transition-normal); }
       .cse-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--color-accent-gold); }
@@ -117,7 +158,6 @@
       .cse-explore-btn { display: inline-block; margin-top: var(--space-md); font-weight: 700; color: var(--color-accent-gold); text-decoration: none; background: none; border: none; font-family: inherit; font-size: inherit; cursor: pointer; padding: 0; text-align: left;}
       .cse-explore-btn:hover { text-decoration: underline; }
 
-      /* --- Reports & Data Explorer Tables --- */
       .table-wrapper { overflow-x: auto; background: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); }
       .data-table { width: 100%; border-collapse: collapse; }
       .data-table th, .data-table td { padding: var(--space-md) var(--space-lg); text-align: left; border-bottom: 1px solid var(--color-glass-border); white-space: nowrap; }
@@ -128,7 +168,6 @@
       .data-table td:not(:first-child) { text-align: center; }
       .data-table th:not(:first-child) { text-align: center; }
 
-      /* --- Modal (Generic) --- */
       .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 200; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
       .modal-overlay.is-visible { opacity: 1; visibility: visible; }
       .modal-container { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); background-color: var(--color-dark); border: 1px solid var(--color-glass-border); border-radius: var(--radius-xl); max-width: 900px; width: calc(100% - 2rem); max-height: 90vh; overflow-y: auto; z-index: 201; box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease; }
@@ -142,17 +181,39 @@
       .modal-content ul { list-style-position: inside; padding-left: 0.5rem; color: var(--color-medium);}
       .modal-content li { margin-bottom: 0.5rem; }
 
-      /* --- Search Results Modal --- */
       #search-results-content { max-height: 70vh; }
       .search-result-item { margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--color-glass-border); }
       .search-result-item:last-child { border-bottom: none; }
       .search-result-title { font-family: var(--font-heading); font-size: 1.25rem; color: var(--color-accent-teal); }
       .search-result-type { font-size: 0.8rem; font-weight: bold; color: var(--color-medium); text-transform: uppercase; margin-bottom: 0.5rem; }
-      .search-result-snippet { font-size: 1rem; color: var(--color-text); }
+      .search-result-snippet { font-size: 1rem; color: var(--color-text); white-space: pre-wrap; }
       .no-results-message { color: var(--color-medium); text-align: center; padding: var(--space-xl) 0; }
       .result-link { color: var(--color-accent-gold); text-decoration: none; font-weight: bold; }
+      
+      .form-label { display: block; margin-bottom: 0.5rem; font-weight: 700; color: var(--color-medium); }
+      .form-input, .form-textarea { display: block; width: 100%; padding: 0.875rem 1rem; background-color: var(--color-glass); border: 1px solid var(--color-glass-border); border-radius: var(--radius-md); color: var(--color-text); font-family: var(--font-primary); font-size: 1rem; transition: all var(--transition-normal); }
+      .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--color-accent-gold); }
+      .form-textarea { resize: vertical; min-height: 120px; }
+      .form-success-message { display: none; text-align: center; border: 1px solid var(--color-accent-teal); border-radius: var(--radius-md); padding: 2rem; margin-top: 1.5rem; background: rgba(0, 128, 128, 0.1); }
+      .form-success-title { font-family: var(--font-heading); font-weight: 700; font-size: 2rem; color: var(--color-accent-teal); }
 
-      /* --- GSAP Reveal Animation --- */
+      .site-footer { padding: 3rem 0; background-color: var(--color-dark); border-top: 1px solid var(--color-glass-border); }
+      .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-2xl); margin-bottom: var(--space-2xl); }
+      .footer-about h3 { font-size: 1.5rem; color: var(--color-accent-gold); margin-bottom: var(--space-md); }
+      .footer-about p { font-size: 0.9rem; max-width: 35ch; }
+      .footer-links h4 { font-size: 1.1rem; color: var(--color-text); margin-bottom: var(--space-md); }
+      .footer-links ul { list-style: none; }
+      .footer-links li { margin-bottom: 0.5rem; }
+      .footer-links a { color: var(--color-medium); text-decoration: none; font-size: 0.9rem; transition: color var(--transition-normal); }
+      .footer-links a:hover { color: var(--color-accent-gold); }
+      .footer-social h4 { font-size: 1.1rem; color: var(--color-text); margin-bottom: var(--space-md); }
+      .social-icons { display: flex; gap: var(--space-lg); }
+      .social-icons a { color: var(--color-medium); font-size: 1.5rem; text-decoration: none; transition: color var(--transition-normal); }
+      .social-icons a:hover { color: var(--color-accent-gold); }
+      .footer-bottom { border-top: 1px solid var(--color-glass-border); padding-top: var(--space-lg); text-align: center; }
+      .footer-bottom p { font-size: 0.85rem; color: var(--color-medium); max-width: none; }
+
+
       .reveal-up { opacity: 0; transform: translateY(40px); }
     </style>
 </head>
@@ -165,9 +226,7 @@
                 <h2 id="modal-title" class="modal-title">Module Title</h2>
                 <button id="modal-close-btn" class="modal-close-btn" aria-label="Close module">&times;</button>
             </div>
-            <div class="modal-content" id="modal-content">
-                <!-- Module content will be injected here -->
-            </div>
+            <div class="modal-content" id="modal-content"></div>
         </div>
     </div>
     
@@ -177,9 +236,7 @@
                 <h2 class="modal-title">Search Results</h2>
                 <button id="search-results-close-btn" class="modal-close-btn" aria-label="Close search results">&times;</button>
             </div>
-            <div class="modal-content" id="search-results-content">
-                <!-- Search results will be injected here -->
-            </div>
+            <div class="modal-content" id="search-results-content"></div>
         </div>
     </div>
 
@@ -188,14 +245,14 @@
         <header id="site-header" class="site-header">
             <div class="container">
                 <a href="#dashboard" class="nav-logo">MahwariNexus</a>
-                <nav class="main-nav">
-                    <a href="#dashboard" class="nav-link">Dashboard</a>
-                    <a href="#cse" class="nav-link">CSE Curricula</a>
-                    <a href="#reports" class="nav-link">Reports</a>
-                    <a href="#explorer" class="nav-link">Data Explorer</a>
-                </nav>
-                <div class="user-profile">
-                    Researcher | UNFPA
+                <div class="header-right">
+                    <nav class="main-nav">
+                        <a href="#dashboard" class="nav-link">Dashboard</a>
+                        <a href="#cse" class="nav-link">CSE Curricula</a>
+                        <a href="#reports" class="nav-link">Reports</a>
+                        <a href="#explorer" class="nav-link">Data Explorer</a>
+                        <a href="#contact" class="nav-link">Contact</a>
+                    </nav>
                 </div>
             </div>
         </header>
@@ -203,16 +260,47 @@
         <main id="main-content">
             <section id="dashboard" class="content-section">
                 <div class="container">
-                    <div class="reveal-up">
-                        <h1>Global SRHR Dashboard</h1>
-                        <p>The definitive intelligence engine for Sexual and Reproductive Health and Rights.</p>
-                        <form class="search-bar" id="search-form">
-                            <input type="search" id="search-input" class="search-input" placeholder="Ask a question or search for data (e.g., 'What is CPR?' or 'Pakistan MMR')...">
-                            <button type="submit" class="search-btn">Search</button>
-                        </form>
+                    <div class="hero-section">
+                      <h1>Global SRHR Intelligence</h1>
+                      <p>The definitive engine for Sexual and Reproductive Health and Rights.</p>
                     </div>
 
-                    <div class="stats-grid">
+                    <div class="marquee">
+                        <div class="marquee-content">
+                            <span><strong>Pakistan</strong> Unmet Need: 17.3%</span>
+                            <span><strong>Nigeria</strong> MMR: 917</span>
+                            <span><strong>Global</strong> Adolescent Birth Rate: 41.2</span>
+                            <span><strong>India</strong> CPR: 56.5%</span>
+                            <span><strong>Haiti</strong> Unmet Need: 33.5%</span>
+                             <span><strong>Pakistan</strong> Unmet Need: 17.3%</span>
+                            <span><strong>Nigeria</strong> MMR: 917</span>
+                            <span><strong>Global</strong> Adolescent Birth Rate: 41.2</span>
+                            <span><strong>India</strong> CPR: 56.5%</span>
+                            <span><strong>Haiti</strong> Unmet Need: 33.5%</span>
+                        </div>
+                    </div>
+
+                    <form class="search-bar reveal-up" id="search-form">
+                        <input type="search" id="search-input" class="search-input" placeholder="Ask a question or search for data (e.g., 'What is CPR?' or 'Pakistan MMR')...">
+                        <button type="submit" class="search-btn">Search</button>
+                    </form>
+                </div>
+
+                <div class="dynamic-chapters-wrapper" id="dynamic-chapters-wrapper">
+                    <div class="dynamic-chapters-pinned">
+                        <div class="chapter-background"></div>
+                        <div class="dynamic-chapters-overlay"></div>
+                        <div class="dynamic-chapters-container">
+                             <div class="chapter-content-area">
+                                <div class="chapter-content"></div>
+                             </div>
+                            <div class="chapter-navigation"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="stats-grid" style="margin-top: var(--space-2xl);">
                         <div class="stat-card reveal-up">
                             <h4 class="stat-title">Contraceptive Prevalence</h4>
                             <p class="stat-value">57.4%</p>
@@ -256,18 +344,15 @@
                             <h3>Trends: Contraceptive Prevalence (Modern Methods)</h3>
                             <div class="visualization-wrapper">
                                 <svg class="trend-chart-svg" id="trend-chart" viewBox="0 0 200 110">
-                                    <!-- Grid lines -->
                                     <line class="grid-line" x1="15" y1="10" x2="190" y2="10"></line>
                                     <line class="grid-line" x1="15" y1="50" x2="190" y2="50"></line>
                                     <line class="grid-line" x1="15" y1="90" x2="190" y2="90"></line>
-                                    <!-- Axis Labels -->
                                     <text class="axis-label" x="0" y="12">75%</text>
                                     <text class="axis-label" x="0" y="52">50%</text>
                                     <text class="axis-label" x="0" y="92">25%</text>
                                     <text class="axis-label" x="20" y="105">2000</text>
                                     <text class="axis-label" x="90" y="105">2012</text>
                                     <text class="axis-label" x="170" y="105">2024</text>
-                                    <!-- Trend Line will be populated by JS -->
                                 </svg>
                             </div>
                         </div>
@@ -327,25 +412,25 @@
                                     <td>UNFPA State of World Population 2024</td>
                                     <td>Thematic Report</td>
                                     <td>2025-09-30</td>
-                                    <td><a href="data:text/plain;charset=utf-8,UNFPA%20State%20of%20World%20Population%202024%0A%0AThis%20is%20a%20placeholder%20for%20the%20full%20report%20document." download="UNFPA_SoWP_2024_Summary.pdf" class="btn">Download PDF</a></td>
+                                    <td><a href="data:text/plain;charset=utf-8," download="UNFPA_SoWP_2024_Summary.pdf" class="btn">Download PDF</a></td>
                                 </tr>
                                 <tr>
                                     <td>Nigeria - National SRHR Profile</td>
                                     <td>Country Profile</td>
                                     <td>2025-09-28</td>
-                                    <td><a href="data:text/plain;charset=utf-8,Nigeria%20-%20National%20SRHR%20Profile%0A%0AThis%20is%20a%20placeholder%20for%20the%20full%20report%20document." download="Nigeria_SRHR_Profile_2025.pdf" class="btn">Download PDF</a></td>
+                                    <td><a href="data:text/plain;charset=utf-8," download="Nigeria_SRHR_Profile_2025.pdf" class="btn">Download PDF</a></td>
                                 </tr>
                                 <tr>
                                     <td>Global Adolescent Fertility (2015-2024)</td>
                                     <td>Data Export</td>
                                     <td>2025-09-25</td>
-                                    <td><a href="data:text/csv;charset=utf-8,Year,Region,Adolescent_Fertility_Rate%0A2015,Global,44.1%0A2016,Global,43.8%0A2017,Global,43.5%0A2018,Global,43.1%0A2019,Global,42.7%0A2020,Global,42.5%0A2021,Global,42.1%0A2022,Global,41.7%0A2023,Global,41.5%0A2024,Global,41.2" download="Global_Adolescent_Fertility_2015-2024.csv" class="btn">Download CSV</a></td>
+                                    <td><a href="data:text/csv;charset=utf-8,Year,Region,Adolescent_Fertility_Rate%0A2015,Global,44.1%0A2016,Global,43.8" download="Global_Adolescent_Fertility_2015-2024.csv" class="btn">Download CSV</a></td>
                                 </tr>
                                 <tr>
                                     <td>Trends in Maternal Mortality 2000-2020 (WHO)</td>
                                     <td>Thematic Report</td>
                                     <td>2025-09-15</td>
-                                    <td><a href="data:text/plain;charset=utf-8,Trends%20in%20Maternal%20Mortality%202000-2020%20(WHO)%0A%0AThis%20is%20a%20placeholder%20for%20the%20full%20report%20document." download="WHO_Maternal_Mortality_Trends_2000-2020.pdf" class="btn">Download PDF</a></td>
+                                    <td><a href="data:text/plain;charset=utf-8," download="WHO_Maternal_Mortality_Trends_2000-2020.pdf" class="btn">Download PDF</a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -418,7 +503,69 @@
                     </div>
                 </div>
             </section>
+            
+            <section id="contact" class="content-section">
+                <div class="container">
+                    <div class="reveal-up" style="max-width: 700px; margin: auto; text-align: center;">
+                        <h2>Contact Us</h2>
+                        <p>Have a question, partnership proposal, or feedback? We'd love to hear from you.</p>
+                    </div>
+                    <form id="contact-form" action="https://formspree.io/f/mwprzolg" method="POST" class="reveal-up" style="max-width: 700px; margin: var(--space-xl) auto; display: flex; flex-direction: column; gap: var(--space-lg);">
+                        <div>
+                            <label for="name" class="form-label sr-only">Name</label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="Your Name" required>
+                        </div>
+                        <div>
+                             <label for="email" class="form-label sr-only">Email</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="Your Email" required>
+                        </div>
+                        <div>
+                            <label for="message" class="form-label sr-only">Message</label>
+                            <textarea id="message" name="message" class="form-textarea" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="align-self: flex-start;">Send Message</button>
+                    </form>
+                    <div id="form-success" class="form-success-message">
+                        <h3 class="form-success-title">Thank You!</h3>
+                        <p>Your message has been received. We'll be in touch soon.</p>
+                    </div>
+                </div>
+            </section>
         </main>
+        <footer class="site-footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-about">
+                        <h3>MahwariNexus</h3>
+                        <p>The definitive intelligence engine for Sexual and Reproductive Health and Rights, empowering policymakers and researchers with actionable data.</p>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#dashboard">Dashboard</a></li>
+                            <li><a href="#cse">CSE Curricula</a></li>
+                            <li><a href="#reports">Reports</a></li>
+                            <li><a href="#explorer">Data Explorer</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-social">
+                        <h4>Follow Us</h4>
+                        <div class="social-icons">
+                            <a href="#" aria-label="Twitter">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                            </a>
+                            <a href="#" aria-label="LinkedIn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 MahwariNexus. All Rights Reserved.</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -443,6 +590,13 @@
             searchResultsOverlay: document.querySelector('#search-results-overlay'),
             searchResultsContent: document.querySelector('#search-results-content'),
             searchResultsCloseBtn: document.querySelector('#search-results-close-btn'),
+            contactForm: document.querySelector('#contact-form'),
+            formSuccessMessage: document.querySelector('#form-success'),
+            dynamicChaptersWrapper: document.querySelector('.dynamic-chapters-wrapper'),
+            dynamicChaptersPinned: document.querySelector('.dynamic-chapters-pinned'),
+            chapterBackground: document.querySelector('.chapter-background'),
+            chapterContent: document.querySelector('.chapter-content'),
+            chapterNav: document.querySelector('.chapter-navigation'),
         };
 
         let cosmicBgAnimator = null;
@@ -457,6 +611,9 @@
         initInteractiveChart();
         initModuleModal();
         initSearch();
+        initContactForm();
+        initDynamicChapters();
+
 
         function initNavigation() {
             document.querySelectorAll('.main-nav a[href^="#"], .nav-logo[href^="#"]').forEach(anchor => {
@@ -693,78 +850,81 @@
             els.modalCloseBtn.addEventListener('click', () => toggleModal(els.moduleModalOverlay, false));
         }
 
-        function initSearch() {
+        async function initSearch() {
             if (!els.searchForm) return;
 
-            const knowledgeBase = [
-                {
-                    keywords: ['maternal mortality', 'mmr'],
-                    type: 'Definition',
-                    title: 'Maternal Mortality Ratio (MMR)',
-                    content: 'The number of maternal deaths during a given time period per 100,000 live births during the same time period. The global MMR in 2020 was 223.'
-                },
-                {
-                    keywords: ['contraceptive prevalence', 'cpr'],
-                    type: 'Definition',
-                    title: 'Contraceptive Prevalence Rate (CPR)',
-                    content: 'The percentage of women of reproductive age (15-49 years) who are using (or whose partner is using) a contraceptive method at a given point in time.'
-                },
-                 {
-                    keywords: ['unmet need', 'family planning'],
-                    type: 'Definition',
-                    title: 'Unmet Need for Family Planning',
-                    content: 'The percentage of women of reproductive age who want to stop or delay childbearing but are not using any method of contraception.'
-                },
-                {
-                    keywords: ['pakistan', 'pakistan data'],
-                    type: 'Data',
-                    title: 'Data for Pakistan',
-                    content: 'Unmet Need for FP: 17.3%<br>CPR (Modern): 34.2%<br>MMR: 186 per 100,000 live births<br>Adolescent Birth Rate: 38 per 1,000'
-                },
-                 {
-                    keywords: ['nigeria', 'nigeria data'],
-                    type: 'Data',
-                    title: 'Data for Nigeria',
-                    content: 'Unmet Need for FP: 19.0%<br>CPR (Modern): 12.0%<br>MMR: 917 per 100,000 live births<br>Adolescent Birth Rate: 101 per 1,000'
-                },
-                {
-                    keywords: ['consent', 'relationships'],
-                    type: 'Concept',
-                    title: 'Consent',
-                    content: 'Consent is an agreement between participants to engage in an activity. It is a key concept in the <a href="#cse" class="result-link">Relationships Module</a> and the <a href="#cse" class="result-link">Violence and Staying Safe Module</a>.'
-                },
-                {
-                    keywords: ['gender', 'gender equality'],
-                    type: 'Concept',
-                    title: 'Gender Equality',
-                    content: 'Gender equality is when people of all genders have equal rights, responsibilities and opportunities. Explored in the <a href="#cse" class="result-link">Understanding Gender Module</a>.'
-                },
-            ];
+            const systemPrompt = `You are the MahwariNexus AI, an expert assistant for Sexual and Reproductive Health and Rights (SRHR) data. Your purpose is to provide clear, accurate, and concise information based on a simulated global dataset.
 
-            els.searchForm.addEventListener('submit', (e) => {
+            When a user asks a question, you MUST respond in one of the following ways:
+
+            1.  **If asked for a definition** (e.g., "What is MMR?", "Define contraceptive prevalence"): Provide a clear, textbook-style definition of the term.
+
+            2.  **If asked for specific data** (e.g., "Pakistan MMR", "Nigeria data"): Provide the requested data points in a structured format. Use the following (simulated) data:
+                * **Pakistan:** Unmet Need for FP: 17.3%, CPR (Modern): 34.2%, MMR: 186, Adolescent Birth Rate: 38.
+                * **Nigeria:** Unmet Need for FP: 19.0%, CPR (Modern): 12.0%, MMR: 917, Adolescent Birth Rate: 101.
+                * **Global:** MMR: 223, Adolescent Birth Rate: 41.2.
+                * For any other country or data point, state: "Specific data for this query is not available in the current simulation."
+
+            3.  **If asked to compare data** (e.g., "Compare MMR in Pakistan and Nigeria"): Present the data for the requested countries side-by-side and provide a brief summary of the comparison.
+
+            4.  **If asked about a concept** (e.g., "Tell me about consent"): Provide a clear explanation of the concept and, if applicable, mention which CSE module it is covered in (Relationships, Gender, Safety, Health).
+
+            Keep your answers concise and to the point. Format your response clearly. Do not invent data.`;
+
+            els.searchForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const query = els.searchInput.value.toLowerCase().trim();
-                if (!query) return;
+                const userQuery = els.searchInput.value.trim();
+                if (!userQuery) return;
 
-                const results = knowledgeBase.filter(item => 
-                    item.keywords.some(keyword => query.includes(keyword))
-                );
+                displaySearchResults(null, userQuery, true); // Show loading state
 
-                displaySearchResults(results, query);
+                try {
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+                    const payload = {
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        systemInstruction: {
+                            parts: [{ text: systemPrompt }]
+                        },
+                    };
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+                    const text = candidate?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        displaySearchResults(text, userQuery);
+                    } else {
+                         displaySearchResults("I am sorry, but I could not generate a response for that query.", userQuery);
+                    }
+                } catch (error) {
+                    console.error("Search API call failed:", error);
+                    displaySearchResults("There was an error processing your request. Please try again.", userQuery);
+                }
             });
 
-            function displaySearchResults(results, query) {
+            function displaySearchResults(resultText, query, isLoading = false) {
                 let html = '';
-                if (results.length > 0) {
-                    results.forEach(result => {
-                        html += `
-                            <div class="search-result-item">
-                                <p class="search-result-type">${result.type}</p>
-                                <h4 class="search-result-title">${result.title}</h4>
-                                <p class="search-result-snippet">${result.content}</p>
-                            </div>
-                        `;
-                    });
+                if (isLoading) {
+                     html = `<p class="no-results-message">Searching for an answer to "${query}"...</p>`;
+                } else if (resultText) {
+                    html = `
+                        <div class="search-result-item">
+                            <h4 class="search-result-title">Response to your query:</h4>
+                            <p class="search-result-snippet">${resultText.replace(/\n/g, '<br>')}</p>
+                        </div>
+                    `;
                 } else {
                     html = `<p class="no-results-message">No results found for "${query}". Try searching for a specific country, indicator (like 'MMR'), or concept (like 'consent').</p>`;
                 }
@@ -774,6 +934,42 @@
             
             els.searchResultsCloseBtn.addEventListener('click', () => toggleModal(els.searchResultsOverlay, false));
         }
+        
+        function initContactForm() {
+            if (!els.contactForm) return;
+
+            els.contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                const button = form.querySelector('button');
+                button.disabled = true;
+                button.textContent = 'Sending...';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        els.formSuccessMessage.style.display = 'block';
+                        form.style.display = 'none';
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('There was a problem submitting your form. Please try again.');
+                    button.disabled = false;
+                    button.textContent = 'Send Message';
+                }
+            });
+        }
+
 
         function toggleModal(modalOverlay, show) {
             if (!modalOverlay) return;
@@ -786,7 +982,6 @@
             }
         }
         
-        // Generic modal escape listener
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay.is-visible').forEach(modal => {
@@ -851,6 +1046,137 @@
                 if(els.cosmicBackground) els.cosmicBackground.style.display = 'none';
             }
         }
+        
+        function initDynamicChapters() {
+            if (!els.dynamicChaptersWrapper || !els.chapterContent) return;
+            
+            const chapterData = [
+                 { title: 'Decode The Future', subtitle: 'Predicting trends and shaping policies for tomorrow.', description: 'We leverage advanced analytics and predictive modeling to forecast SRHR trends, helping policymakers anticipate challenges and design proactive interventions for a healthier, more equitable future.', image: 'https://images.unsplash.com/photo-1549725287-f2736b1356b4?q=80&w=2670&auto=format&fit=crop' },
+                 { title: 'Global Reach', subtitle: 'Impacting lives from remote villages to global forums.', description: 'Our data and insights empower organizations working on the front lines in diverse regions, from remote South Asian villages to bustling African cities, ensuring that no community is left behind in the pursuit of SRHR.', image: 'https://images.unsplash.com/photo-1629731631551-87895f50a41d?q=80&w=2670&auto=format&fit=crop' },
+                 { title: 'Empowering Communities', subtitle: 'Building capacity and fostering local leadership.', description: 'Beyond data, we support community-led initiatives and educational programs that empower individuals with knowledge and resources, driving sustainable change from the ground up across Latin America and beyond.', image: 'https://images.unsplash.com/photo-1517457210967-897b7b13e9a1?q=80&w=2670&auto=format&fit=crop' },
+                 { title: 'Data-Driven Insights', subtitle: 'Transforming raw data into actionable intelligence.', description: 'MahwariNexus is built on a foundation of robust, verifiable data, providing the gold standard intelligence needed by governments, NGOs, and researchers to make informed decisions that save and improve lives globally.', image: 'https://images.unsplash.com/photo-1549282305-6736279f06a8?q=80&w=2670&auto=format&fit=crop' }
+            ];
+
+            // Populate navigation
+            let navHTML = '';
+            chapterData.forEach((chapter, index) => {
+                navHTML += `<a href="#" class="chapter-nav-item" data-index="${index}">${chapter.title}</a>`;
+            });
+            els.chapterNav.innerHTML = navHTML;
+            const navItems = els.chapterNav.querySelectorAll('.chapter-nav-item');
+
+            let activeChapter = 0;
+
+            function updateChapter(index, direction) {
+                if (!els.chapterContent) return;
+                const data = chapterData[index];
+                
+                const yStart = direction === 'down' ? 50 : -50;
+
+                gsap.to(els.chapterContent, {
+                    opacity: 0, y: -yStart, duration: 0.4,
+                    onComplete: () => {
+                        els.chapterContent.innerHTML = `
+                            <h2>${data.title}</h2>
+                            <h3>${data.subtitle}</h3>
+                            <p>${data.description}</p>
+                            <button class="btn btn-primary learn-more-btn" data-chapter-index="${index}">Learn More</button>
+                        `;
+                        gsap.fromTo(els.chapterContent, { y: yStart, opacity: 0 }, { opacity: 1, y: 0, duration: 0.6 });
+                    }
+                });
+                
+                gsap.to(els.chapterBackground, {
+                    backgroundImage: `url(${data.image})`,
+                    duration: 1.5,
+                    ease: 'power2.inOut'
+                });
+
+                navItems.forEach((nav, i) => nav.classList.toggle('active', i === index));
+                activeChapter = index;
+            }
+            
+            ScrollTrigger.create({
+                trigger: els.dynamicChaptersWrapper,
+                pin: els.dynamicChaptersPinned,
+                scrub: 1,
+                start: "top top",
+                end: "+=2000", 
+                onUpdate: self => {
+                    const progress = self.progress;
+                    const index = Math.floor(progress * chapterData.length);
+                    const safeIndex = Math.min(index, chapterData.length - 1);
+                    if (safeIndex !== activeChapter) {
+                        updateChapter(safeIndex, self.direction === 1 ? 'down' : 'up');
+                    }
+                }
+            });
+
+            navItems.forEach(item => {
+                item.addEventListener('click', e => {
+                    e.preventDefault();
+                    const index = parseInt(item.dataset.index);
+                    const trigger = ScrollTrigger.getByTrigger(els.dynamicChaptersWrapper);
+                    if (trigger) {
+                        const newScroll = trigger.start + (index / (chapterData.length -1)) * (trigger.end - trigger.start);
+                        gsap.to(window, { scrollTo: { y: newScroll, autoKill: false }, duration: 1, ease: 'power2.inOut' });
+                    }
+                });
+            });
+
+            // Initial content
+            updateChapter(0, 'down');
+            gsap.set(els.chapterBackground, {backgroundImage: `url(${chapterData[0].image})`});
+            
+            // Event delegation for "Learn More" buttons
+            els.chapterContent.addEventListener('click', function(e) {
+                if (e.target.classList.contains('learn-more-btn')) {
+                    const chapterIndex = e.target.dataset.chapterIndex;
+                    handleChapterDeepDive(chapterIndex);
+                }
+            });
+        }
+        
+        async function handleChapterDeepDive(chapterIndex) {
+            const deepDivePrompts = [
+                "As the MahwariNexus AI, provide a brief analysis on how predictive modeling can be used to forecast future SRHR trends. Mention 2-3 key variables (e.g., education levels, economic growth, policy changes) and how they might impact future contraceptive prevalence rates.",
+                "As the MahwariNexus AI, analyze the disparities in SRHR data between high-income regions and low-income regions like rural South Asia and Sub-Saharan Africa. Briefly discuss 2-3 key challenges in data collection in these underserved areas.",
+                "As the MahwariNexus AI, explain the importance of community-led educational programs for improving SRHR outcomes. Provide two examples of how empowering local leaders in regions like Latin America can lead to sustainable change.",
+                "As the MahwariNexus AI, describe how transforming raw SRHR data into actionable intelligence helps NGOs and governments. Give a specific example, such as how tracking Maternal Mortality Ratios (MMR) can lead to targeted healthcare interventions."
+            ];
+
+            const userQuery = deepDivePrompts[chapterIndex];
+            if (!userQuery) return;
+            
+            displaySearchResults(null, "Generating deep dive analysis...", true);
+            
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ parts: [{ text: userQuery }] }] };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (text) {
+                    displaySearchResults(text, "Deep Dive Analysis");
+                } else {
+                    displaySearchResults("Could not generate a deep dive analysis at this time.", "Error");
+                }
+            } catch (error) {
+                console.error("Deep Dive API call failed:", error);
+                displaySearchResults("There was an error processing your request.", "Error");
+            }
+        }
+
 
         function initSiteAnimations() {
             if (typeof gsap === 'undefined') return;
