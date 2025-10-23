@@ -19,7 +19,7 @@
           --color-primary: #1A120B; --color-text: #EAE0D5; --color-accent-gold: #DAA520;
           --color-accent-teal: #008080; --color-medium: #A8A29A; --color-dark: #0D0907;
           --color-glass: rgba(234, 224, 213, 0.1); --color-glass-border: rgba(234, 224, 213, 0.2);
-          --font-primary: 'Nunito Sans', -apple-system, BlinkMacMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          --font-primary: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           --font-heading: 'Cormorant Garamond', Georgia, serif;
           --header-height: 72px; --space-md: 1rem; --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
           --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
@@ -389,8 +389,8 @@
             <section id="reports" class="content-section">
                 <div class="container">
                     <div class="reveal-up">
-                        <h2>Generated Reports & Documents</h2>
-                        <p>Access and download pre-computed national profiles, thematic reports, and raw data exports.</p>
+                        <h2>Generated Reports & Documents 📚</h2>
+                        <p>Access and download pre-computed national profiles, thematic reports, and raw data exports from leading global health and rights authorities (WHO, UNFPA, World Bank).</p>
                     </div>
                     <div class="table-wrapper reveal-up" style="margin-top: var(--space-xl);">
                         <table class="data-table">
@@ -398,34 +398,34 @@
                                 <tr>
                                     <th>Title</th>
                                     <th>Category</th>
-                                    <th>Date Generated</th>
+                                    <th>Date of Document</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>UNFPA State of World Population 2024</td>
-                                    <td>Thematic Report</td>
-                                    <td>2025-09-30</td>
-                                    <td><a href="data:text/plain;charset=utf-8," download="UNFPA_SoWP_2024_Summary.pdf" class="btn">Download PDF</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Nigeria - National SRHR Profile</td>
-                                    <td>Country Profile</td>
-                                    <td>2025-09-28</td>
-                                    <td><a href="data:text/plain;charset=utf-8," download="Nigeria_SRHR_Profile_2025.pdf" class="btn">Download PDF</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Global Adolescent Fertility (2015-2024)</td>
-                                    <td>Data Export</td>
-                                    <td>2025-09-25</td>
-                                    <td><a href="data:text/csv;charset=utf-8,Year,Region,Adolescent_Fertility_Rate%0A2015,Global,44.1%0A2016,Global,43.8" download="Global_Adolescent_Fertility_2015-2024.csv" class="btn">Download CSV</a></td>
+                                    <td>Thematic Report (SRHR)</td>
+                                    <td>2024</td>
+                                    <td><a href="https://www.unfpa.org/sites/default/files/pub-pdf/SOWP-2024-report-EN.pdf" target="_blank" class="btn">Download PDF</a></td>
                                 </tr>
                                 <tr>
                                     <td>Trends in Maternal Mortality 2000-2020 (WHO)</td>
-                                    <td>Thematic Report</td>
-                                    <td>2025-09-15</td>
-                                    <td><a href="data:text/plain;charset=utf-8," download="WHO_Maternal_Mortality_Trends_2000-2020.pdf" class="btn">Download PDF</a></td>
+                                    <td>Thematic Report (MMR)</td>
+                                    <td>2023 (Data up to 2020)</td>
+                                    <td><a href="https://www.who.int/publications/i/item/9789240068759" target="_blank" class="btn">Download PDF</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Global Adolescent Fertility (Key Data)</td>
+                                    <td>Data Brief (Adolescent Health)</td>
+                                    <td>2023</td>
+                                    <td><a href="https://data.unicef.org/topic/maternal-health/adolescent-childbearing/" target="_blank" class="btn">View Data Page</a></td>
+                                </tr>
+                                <tr>
+                                    <td>WHO Guidance on Comprehensive Sexuality Education</td>
+                                    <td>Policy Guidance (CSE)</td>
+                                    <td>2021</td>
+                                    <td><a href="https://unesdoc.unesco.org/ark:/48223/pf0000378875" target="_blank" class="btn">Download PDF</a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -607,7 +607,7 @@
         initInteractiveMap();
         initInteractiveChart();
         initModuleModal();
-        initSearch(); // <<< FIXED SEARCH FUNCTIONALITY
+        initSearch();
         initContactForm();
         initDynamicChapters();
 
@@ -851,7 +851,6 @@
             els.modalCloseBtn.addEventListener('click', () => toggleModal(els.moduleModalOverlay, false));
         }
 
-        // --- START OF FIXED AND ENHANCED initSearch FUNCTION ---
         async function initSearch() {
             if (!els.searchForm) return;
 
@@ -930,13 +929,13 @@
                     // Combine user query with topic context for the most relevant external search
                     const externalQuery = `${userQuery} AND Comprehensive Sexuality Education SRHR maternal health policy data`;
                     
-                    // --- THE CORE AI/ML SEARCH INTEGRATION ---
-                    // This line executes the Google Search tool, simulating a smart, targeted search.
+                    // --- THE CORE AI/ML SEARCH INTEGRATION (via google:search tool) ---
                     const searchResults = await google.search([externalQuery]);
                     
                     if (searchResults && searchResults.length > 0) {
                         
                         // Use AI (via prompt engineering) to generate a summary based on the results
+                        // This summary is designed to be highly relevant to the CSE/SRHR context
                         const aiGeneratedSummary = `
                             Based on your query, the MahwariNexus AI ran a targeted search on CSE, SRHR, and maternal health policy. 
 
@@ -945,6 +944,7 @@
                         
                         let externalHtml = '';
                         searchResults.slice(0, 3).forEach(result => {
+                            // Using the source_title and snippet from the external search result
                             if (result.snippet && result.source_title) {
                                 externalHtml += `
                                     <div class="search-result-item" style="border-bottom: 1px solid var(--color-glass-border);">
@@ -971,7 +971,6 @@
             
             els.searchResultsCloseBtn.addEventListener('click', () => toggleModal(els.searchResultsOverlay, false));
         }
-        // --- END OF FIXED AND ENHANCED initSearch FUNCTION ---
         
         function initContactForm() {
             if (!els.contactForm) return;
@@ -1182,7 +1181,7 @@
             const deepDivePrompts = [
                 "Analyze how predictive modeling forecasts future SRHR trends, focusing on education levels and policy changes impacting contraceptive prevalence rates.",
                 "Analyze the disparities in SRHR data between high-income regions and low-income regions like rural South Asia and Sub-Saharan Africa. Discuss 2-3 key challenges in data collection in these underserved areas.",
-                "Explain the importance of community-led educational programs for improving SRHR outcomes. Provide two examples of how empowering local leaders in Latin America can lead to sustainable change.",
+                "Explain the importance of community-led educational programs for improving SRHR outcomes. Provide two examples of how empowering local leaders in regions like Latin America can lead to sustainable change.",
                 "Describe how transforming raw SRHR data into actionable intelligence helps NGOs and governments. Give a specific example, such as how tracking Maternal Mortality Ratios (MMR) leads to targeted healthcare interventions."
             ];
 
